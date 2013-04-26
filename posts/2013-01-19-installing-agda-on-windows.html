@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html class="light cyan" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Installing Agda on Windows</title>
+        <link rel="stylesheet" type="text/css" href="../css/solarized.css" />
+        <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+        <link rel="stylesheet" type="text/css" href="../css/default.css" />
+        <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-16820193-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+    </head>
+    <body>
+        <div id="header">
+            <div id="logo">
+                <a href="../">dagit.o</a>
+            </div>
+            <div id="navigation">
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../posts.html">Posts</a>
+            </div>
+        </div>
+
+        <div id="content">
+            <h1>Installing Agda on Windows</h1>
+
+            
+<div class="info">Posted on January 19, 2013, in <a href="../tags/agda.html">agda</a>, <a href="../tags/windows.html">windows</a>, <a href="../tags/imported.html">imported</a></div>
+
+<p>I was able to get Agda installed and working on windows. The versions involved:</p>
+<ul>
+<li>Agda (from darcs, it’s roughly a 2.3.3 prelease)</li>
+<li>ghc-7.6.1 32-bit</li>
+<li>gnu emacs 24.2</li>
+<li>Windows 7 64-bit</li>
+<li>Deja Vu font</li>
+</ul>
+<ol style="list-style-type: decimal">
+<li><p>First, I installed ghc from <a href="http://www.haskell.org/ghc/download_ghc_7_6_1">here</a>.</p></li>
+<li><p>The next step is the hardest one. You need a copy of darcs. I already had a copy of darcs from a previous ghc install. If you can’t find a windows binary of darcs that works for you, try these patches: <a href="http://lists.osuosl.org/pipermail/darcs-users/2012-December/026733.html">http://lists.osuosl.org/pipermail/darcs-users/2012-December/026733.html</a></p></li>
+<li><p>Fetching Agda and the standard library is quite slow so I recommend starting that now. The commands are:</p>
+<pre><code> darcs get --lazy http://code.haskell.org/Agda
+ darcs get --lazy http://www.cse.chalmers.se/~nad/repos/lib/</code></pre></li>
+<li><p>Next you’ll want to get a recent copy of emacs. I installed emacs 24.2 because it has a nice built-in package manager to make it easier to install extensions. If you use emacs 24.2 you’ll need to patch your Agda installation. You can get emacs from here: <a href="http://ftp.gnu.org/gnu/emacs/windows/">http://ftp.gnu.org/gnu/emacs/windows/</a></p>
+<p>Just expand that archive somewhere and add runemacs to your start menu. We’ll continue with the configuration of emacs in a later step.</p></li>
+<li><p>Finding a good monospace font with unicode glyphs is not easy and I recommend Deja Vu. It’s probably missing some glyphs but I haven’t run into any yet. You can get it here: <a href="http://dejavu-fonts.org/wiki/Download">http://dejavu-fonts.org/wiki/Download</a></p>
+<p>I expanded the tarball using 7-zip and then copied the font files into the font folder in Windows. You can get there by going to Start –&gt; Control Panel –&gt; Fonts.</p></li>
+<li><p><strong>Note: This step is no longer needed with the darcs version of Agda.</strong> Once the download of Agda finishes, go into that directory for the build. I created a patch on this ticket that fixes unicode support. If that hasn’t been applied yet, you’ll need to download the patch and apply it yourself. You can try to apply it in either case and darcs will simply ignore it if it’s there.</p>
+<pre><code> darcs apply &lt;downloaded patch&gt;</code></pre></li>
+<li><p>To start the build I recommend using cabal-dev, and the command would be:</p>
+<pre><code> cabal-dev install --prefix=$HOME/AppData/Roaming/cabal/</code></pre>
+<p>If you use plain cabal, it would simply be this command:</p>
+<pre><code> cabal install</code></pre>
+<p>Once the build finishes, it’s time to configure emacs. Use the agda-mode command to start the configuration:</p>
+<pre><code> agda-mode setup</code></pre></li>
+<li><p>Fire up emacs and open ~/.emacs. Mine looks something like this:</p>
+
+<script src="https://gist.github.com/4574857.js"></script>
+
+<p>You can see that I’ve configured my default font to be Deja Vu. You can set this via the menus, or just copy what I have. I’ve also got a bit in there that makes sure everything is setup to use utf8. I think that is optional. You’ll want to make sure you edit line 8 so that agda can find the standard library code that you downloaded.</p></li>
+<li>Reload your ~/.emacs config (I find it easiest to just restart emacs). Put this sample code into Foo.agda and try to load it with C-c C-l. If everything is working it should produce an error message in the AgdaInfo buffer with correct looking unicode symbols:
+<script src="https://gist.github.com/4574913.js"></script>
+</li>
+</ol>
+<p>If you get stuck try looking around the Agda wiki for pointers. I’ve found that most of the documentation is hanging off this page: <a href="http://wiki.portal.chalmers.se/agda/agda.php?n=Main.Documentation">http://wiki.portal.chalmers.se/agda/agda.php?n=Main.Documentation</a></p>
+
+<section>
+ <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'dagit'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+        </div>
+        <div id="footer">
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </div>
+    </body>
+</html>

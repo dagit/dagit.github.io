@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html class="light cyan" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Delimited Continuations and Version Control</title>
+        <link rel="stylesheet" type="text/css" href="../css/solarized.css" />
+        <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+        <link rel="stylesheet" type="text/css" href="../css/default.css" />
+        <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-16820193-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+    </head>
+    <body>
+        <div id="header">
+            <div id="logo">
+                <a href="../">dagit.o</a>
+            </div>
+            <div id="navigation">
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../posts.html">Posts</a>
+            </div>
+        </div>
+
+        <div id="content">
+            <h1>Delimited Continuations and Version Control</h1>
+
+            
+<div class="info">Posted on June  6, 2010, in <a href="../tags/continuations.html">continuations</a>, <a href="../tags/darcs.html">darcs</a>, <a href="../tags/imported.html">imported</a></div>
+
+<p>Delimited continuations give us a way to create markers that we can jump back to. We can construct the future of the computation, work with the computation so far, or abort the current continuation and go down a new path (create a new future).</p>
+These primitives have a natural correspondence with version control systems that snapshot the world like SVN.  Focusing on SVN for a moment:
+<ul>
+<li>
+The current continuation is the transformation of repository state that you’re working on.  It’s the diff you’re creating.
+</li>
+<li>
+For commits, each revision created by commit is a marker, so we model this with <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">reset</span><span class="Apple-style-span" style="font-family: inherit;">.</span>
+</li>
+<li>
+Checking out an older revision, or reverting changes, corresponds to <span class="Apple-style-span" style="font-family: inherit;">a </span><span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">shift</span><span class="Apple-style-span" style="font-family: inherit;">.  We discard the current continuation and move back to a marker created by a specific </span><span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">reset</span><span class="Apple-style-span" style="font-family: inherit;">.</span>
+</li>
+<li>
+<span class="Apple-style-span" style="font-family: inherit;">Updating consists of having the client copy learn the current state of the continuation on the server and applying it to the local copy.</span>
+</li>
+<li>
+Starting a branch corresponds to a <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">reset</span><span class="Apple-style-span" style="font-family: inherit;">.</span>
+</li>
+<li>
+<span class="Apple-style-span" style="font-family: inherit;">Merging two branches is a bit trickier I suspect.  I haven’t worked out all the details sufficiently to convince myself I have it right, but here is how I think this case works.  The merge first </span><span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">shift</span><span class="Apple-style-span" style="font-family: inherit;">s to each of the markers and then combines those two continuations into one future.  The part that seems weird to me about this, is that I haven’t really seen examples of delimited continuations were the continuation of two different markers (prompts) were combined.</span>
+</li>
+</ul>
+<div>
+Now, if you accept the above it gives us some intuition to build on.  Although my correspondence is terribly informal at the moment, if we took some time to make it formal by working out enough details to model it in, say, Haskell, then we’d have a nice formal backing for how SVN works.  I think the above model applies equally well to git, but I’m not confident with git’s model.
+</div>
+<div>
+
+</div>
+<div>
+One insight the above gives, is that the way merging works is not described by the continuations in general.  It’s up to the exact combining function to determine the merge.  We know that an automatic merge can fail in practice due to things like conflicts between the changes in the branches.  So, in the SVN implementation considerable work has gone into implementing logic for creating the proper continuation.
+</div>
+<div>
+
+</div>
+<div>
+Now, in general when a merge, or update, is performed human intervention may be required.  This typically happens when the changes are in conflict.  What this means for our model is that in general the creation of the continuation requires knowledge outside of our model.  What does that correspond to?  Well, it’s essentially saying that calculating the correct continuation to resolve the merge is <b>non-deterministic</b>!
+</div>
+<div>
+
+</div>
+<div>
+In other words, this continuation view of version control gives us a rigorous way to talk about our intuition.  Of course we can easily tell that merging is going to require human intervention without needing to study delimited continuations, but this framework of reasoning now gives us a more mathematical way to say it.
+</div>
+<div>
+
+</div>
+<div>
+The next question is:   How does the delimited continuation model of vcs apply to Darcs?
+</div>
+<div>
+
+</div>
+<div>
+So far I’m not sure.  I suspect, without working through the details, that in Darcs, every time you record a patch multiple <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">reset</span><span class="Apple-style-span" style="font-family: inherit;">s happen, instead of just one.  The model really breaks down for Darcs because you can seemingly visit points in “history” that did not exist when the patches were created, but they are valid repository states.</span>
+</div>
+<div>
+<span class="Apple-style-span" style="font-family: inherit;"> </span>
+</div>
+<div>
+<span class="Apple-style-span" style="font-family: inherit;">For example, imagine a repository that only exists locally.  You create a sequence of patches.  Now, take a patch in the middle that can be commuted to the end of the patch sequence.  Doing so has not created a new repository state; so far this is fine with the above model as no new markers need to be created.  Suppose we remove the patch from the end of the patch sequence.  This is exactly how darcs unpull works.  The funny thing is, we’ve now created a state that never existed previously.  So in the delimited continuation model, what marker did we just </span><span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">shift</span><span class="Apple-style-span" style="font-family: inherit;"> to?</span>
+</div>
+<div>
+<span class="Apple-style-span" style="font-family: inherit;"> </span>
+</div>
+<div>
+<span class="Apple-style-span" style="font-family: inherit;">I don’t know the answer yet, but I think it’s an interesting question.  I suspect there are multiple “correct” answers, but that only some answers will yield elegant and robust models here.</span>
+</div>
+
+
+
+
+<section>
+ <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'dagit'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+        </div>
+        <div id="footer">
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,960 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title>dagit.o - All posts</title>
+    <link href="http://blog.codersbase.com/rss.xml" rel="self" />
+    <link href="http://blog.codersbase.com" />
+    <id>http://blog.codersbase.com/rss.xml</id>
+    <author>
+        <name>Jason Dagit</name>
+        <email>dagitj@gmail.com</email>
+    </author>
+    <updated>2013-01-19T00:00:00Z</updated>
+    <entry>
+    <title>Installing Agda on Windows</title>
+    <link href="http://blog.codersbase.com/posts/2013-01-19-installing-agda-on-windows.html" />
+    <id>http://blog.codersbase.com/posts/2013-01-19-installing-agda-on-windows.html</id>
+    <published>2013-01-19T00:00:00Z</published>
+    <updated>2013-01-19T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p>I was able to get Agda installed and working on windows. The versions involved:</p>
+<ul>
+<li>Agda (from darcs, it’s roughly a 2.3.3 prelease)</li>
+<li>ghc-7.6.1 32-bit</li>
+<li>gnu emacs 24.2</li>
+<li>Windows 7 64-bit</li>
+<li>Deja Vu font</li>
+</ul>
+<ol style="list-style-type: decimal">
+<li><p>First, I installed ghc from <a href="http://www.haskell.org/ghc/download_ghc_7_6_1">here</a>.</p></li>
+<li><p>The next step is the hardest one. You need a copy of darcs. I already had a copy of darcs from a previous ghc install. If you can’t find a windows binary of darcs that works for you, try these patches: <a href="http://lists.osuosl.org/pipermail/darcs-users/2012-December/026733.html">http://lists.osuosl.org/pipermail/darcs-users/2012-December/026733.html</a></p></li>
+<li><p>Fetching Agda and the standard library is quite slow so I recommend starting that now. The commands are:</p>
+<pre><code> darcs get --lazy http://code.haskell.org/Agda
+ darcs get --lazy http://www.cse.chalmers.se/~nad/repos/lib/</code></pre></li>
+<li><p>Next you’ll want to get a recent copy of emacs. I installed emacs 24.2 because it has a nice built-in package manager to make it easier to install extensions. If you use emacs 24.2 you’ll need to patch your Agda installation. You can get emacs from here: <a href="http://ftp.gnu.org/gnu/emacs/windows/">http://ftp.gnu.org/gnu/emacs/windows/</a></p>
+<p>Just expand that archive somewhere and add runemacs to your start menu. We’ll continue with the configuration of emacs in a later step.</p></li>
+<li><p>Finding a good monospace font with unicode glyphs is not easy and I recommend Deja Vu. It’s probably missing some glyphs but I haven’t run into any yet. You can get it here: <a href="http://dejavu-fonts.org/wiki/Download">http://dejavu-fonts.org/wiki/Download</a></p>
+<p>I expanded the tarball using 7-zip and then copied the font files into the font folder in Windows. You can get there by going to Start –&gt; Control Panel –&gt; Fonts.</p></li>
+<li><p><strong>Note: This step is no longer needed with the darcs version of Agda.</strong> Once the download of Agda finishes, go into that directory for the build. I created a patch on this ticket that fixes unicode support. If that hasn’t been applied yet, you’ll need to download the patch and apply it yourself. You can try to apply it in either case and darcs will simply ignore it if it’s there.</p>
+<pre><code> darcs apply &lt;downloaded patch&gt;</code></pre></li>
+<li><p>To start the build I recommend using cabal-dev, and the command would be:</p>
+<pre><code> cabal-dev install --prefix=$HOME/AppData/Roaming/cabal/</code></pre>
+<p>If you use plain cabal, it would simply be this command:</p>
+<pre><code> cabal install</code></pre>
+<p>Once the build finishes, it’s time to configure emacs. Use the agda-mode command to start the configuration:</p>
+<pre><code> agda-mode setup</code></pre></li>
+<li><p>Fire up emacs and open ~/.emacs. Mine looks something like this:</p>
+
+<script src="https://gist.github.com/4574857.js"></script>
+
+<p>You can see that I’ve configured my default font to be Deja Vu. You can set this via the menus, or just copy what I have. I’ve also got a bit in there that makes sure everything is setup to use utf8. I think that is optional. You’ll want to make sure you edit line 8 so that agda can find the standard library code that you downloaded.</p></li>
+<li>Reload your ~/.emacs config (I find it easiest to just restart emacs). Put this sample code into Foo.agda and try to load it with C-c C-l. If everything is working it should produce an error message in the AgdaInfo buffer with correct looking unicode symbols:
+<script src="https://gist.github.com/4574913.js"></script>
+</li>
+</ol>
+<p>If you get stuck try looking around the Agda wiki for pointers. I’ve found that most of the documentation is hanging off this page: <a href="http://wiki.portal.chalmers.se/agda/agda.php?n=Main.Documentation">http://wiki.portal.chalmers.se/agda/agda.php?n=Main.Documentation</a></p>]]></summary>
+</entry>
+<entry>
+    <title>tmux + ssh-agent</title>
+    <link href="http://blog.codersbase.com/posts/2012-03-30-tmux-ssh-agent.html" />
+    <id>http://blog.codersbase.com/posts/2012-03-30-tmux-ssh-agent.html</id>
+    <published>2012-03-30T00:00:00Z</published>
+    <updated>2012-03-30T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p>Lately I’ve been using tmux on remote servers. This allows me to maintain task-specific sessions on remote servers, regardless of what computer I work from or if my internet connection get severed.</p>
+<p>The biggest wrinkle in my setup has been ssh-agent forwarding. When I reconnect the remote side no longer knows where to find <tt>SSH_AUTH_SOCK</tt>. I found a solution.</p>
+<ol style="list-style-type: decimal">
+<li><p>On the remote host, create <tt>$HOME/.ssh/rc</tt>, make it executable, and add the following contents:</p>
+<script src="https://gist.github.com/2253834.js?file=rc"></script>
+
+<p>Don’t forget: <tt>chmod 755 $HOME/.ssh/rc</tt></p></li>
+<li><p>Add these two lines to your <tt>.tmux.conf</tt>:</p>
+<script src="https://gist.github.com/2253845.js?file=.tmux.conf"> </script>
+</li>
+</ol>
+<p>A few things kept me from getting this working straight away. You have to disable the default behavior of updating <tt>SSH_SOCK_AUTH</tt> (that’s what the first line does), then you have to set <tt>SSH_SOCK_AUTH</tt> to point at the symlink created by the script in step 1.</p>
+<p>Edit: I mistakenly thought previously that you have to use an absolute path to the symlink because tmux won’t expand “<tt>$HOME</tt>”or “<tt>~</tt>”. Turns out, if you don’t quote the path then tmux can do the right thing with <tt>~</tt>.</p>]]></summary>
+</entry>
+<entry>
+    <title>Life at Galois</title>
+    <link href="http://blog.codersbase.com/posts/2012-03-23-life-at-galois.html" />
+    <id>http://blog.codersbase.com/posts/2012-03-23-life-at-galois.html</id>
+    <published>2012-03-23T00:00:00Z</published>
+    <updated>2012-03-23T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p>At Galois, we believe in seeking out and solving important problems to make the world a better place.  This philosophy runs through everything we do. From internal interactions on an individual level to the interesting technical challenges we take on to the way we orient to the external world.</p>
+<p>We hire the best people, we help them to better understand their own passions, and then together we take on important problems.  It just so happens that we have skilled software engineers with a passion for functional programming who take on challenges in crypto, critical systems, secure networking, and so on.</p>
+<p>For me, the very compelling reasons to work at Galois are: a strong cultural emphasis on freedom to choose your roles within the organization including seeking external funding to work on whatever you want; <a href="http://corp.galois.com/blog/category/open-source">strong commitment to open source</a>, and; a cultural emphasis on <a href="http://corp.galois.com/blog/2010/12/10/building-a-business-with-haskell-case-studies-cryptol-halvm.html">functional programming</a> and <a href="http://corp.galois.com/blog/2011/11/10/11-years-of-formal-methods-at-galois.html">formal methods</a>.</p>
+<p>You may have seen the recent article by an <a href="http://blogs.msdn.com/b/jw_on_tech/archive/2012/03/13/why-i-left-google.aspx">ex-google employee</a> explaining why he left Google. One of the themes in the post is that the cultural emphasis, what Google believes, changed. What a organization believes has a deep and profound impact on how you spend your time at the organization, who the organization attracts, and what impact the organization will have in the world.</p>
+<p>We have no shortage of interesting problems to tackle in our quest to make the world a better place. If you’d like to join our cause, we’re always accepting applications. At the moment, we’re especially interested in hearing from potential <a href="http://corp.galois.com/project-lead">project leads</a> and <a href="http://corp.galois.com/principal-investigator">principal investigators</a>, but even if you don’t fit those roles we may still have room for you. We are also interested in applications for internships.</p>]]></summary>
+</entry>
+<entry>
+    <title>Keeping the "science" in Software Development</title>
+    <link href="http://blog.codersbase.com/posts/2012-01-18-keeping-science-in-software-development.html" />
+    <id>http://blog.codersbase.com/posts/2012-01-18-keeping-science-in-software-development.html</id>
+    <published>2012-01-18T00:00:00Z</published>
+    <updated>2012-01-18T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p>If you already feel that math is a science you can safely skip the first section.  What follows are my musings on what it means to be “correct”, especially in software.  I pose a challenge at the end for practitioners and researchers.</p>
+<h1 id="math-is-science-too">Math is science too</h1>
+<p>According to Wikipedia the <a
+href="http://en.wikipedia.org/wiki/Scientific_method">scientific method</a> is:</p>
+<blockquote>
+<p>The scientific method is a body of techniques for investigating phenomena, acquiring new knowledge, or correcting and integrating previous knowledge. To be termed scientific, a method of inquiry must be based on empirical and measurable evidence subject to specific principles of reasoning.</p>
+</blockquote>
+<p>At first glance it may appear that mathematics doesn’t follow the scientific method above. The mathematics that you’re most likely familiar with is a collection of definitions and the facts, lemmas and theorems, about those definitions that result from applying logical deduction.  You might notice that if you reason that way, then textbook applications of newton’s three laws do not follow the scientific method either.</p>
+<p>You might argue that in this case the applications of newton’s laws is now mathematics and no longer science.  I would agree that it is mathematics and science.  Let’s see if I can convince you.</p>
+<p>By the time you see the definitions and corresponding theorems in a math text they have been reduced to facts.  The trial and error, as well as correction and integration of previous knowledge, have already happened.  The same is true of a textbook that shows you how to apply newton’s three laws.  I recommend taking a moment to familiarize yourself with <a href="http://www.maa.org/devlin/LockhartsLament.pdf">Lockhart’s lament</a>.</p>
+<p>Math only seems to not be a science because of our relationship to learning it.  Most of us get taught math as facts.  If you’ve taken a proof based course you may have had the experience of searching for proofs.  There is a lot of trial and error involved.  Mathematics as a field may have already integrated previous knowledge, but if you are taking a course chances are you have not.  So you employ trial and error as well as hypothesis refinement to build logical deductions to establish what your intuition, or pen and paper examples, says in true.</p>
+<p>The set of assumptions that you choose can make or break a result.  Even though mathematical results are timeless, they still bend to the sway of assumptions.  This is exactly what happens to empirical scientists too.  They think they know something, or have the right model, but later it turns out they reasoned from a flawed assumption and suddenly new data transform their field.</p>
+<h1 id="evidence-vs-proof">Evidence vs Proof</h1>
+<p>If you’ve studied proofs in different logical settings you may have noticed that what constitutes a proof depends on what you seek to gain from the proof.  See for example <a href="http://www.andrew.cmu.edu/user/avigad/Teaching/classical.pdf">classical logic versus constructive logic</a>.</p>
+<p>In a court case or a forensics study, people look for evidence or witnesses to give data points in support of a particular position within a larger case (or claim).</p>
+<p>Think about that for a minute.  A claim is made, then people try to establish it or refute it.  Often times, the assertion needs only be accepted or rejected by a “reasonable” skeptic that is willing to accept partial proof.  Such a skeptic might be a jury or peers reviewing a publication for acceptance in a journal.  Because we used partial proof new information could turn up later that reverses our understanding.</p>
+<p>At the other extreme we have mathematical proofs, which are composed of logical statements following from assumptions.  Proofs are <i>timeless</i>.  If we get our logic right and we’re clear about our assumptions then the result will stand forever.  I say “forever”, but in reality, proofs can be found to be incomplete, insufficiently rigorous, or using the wrong logic at a later date.  Sometimes years after the arguments are accepted.</p>
+<p>It seems that the difference here isn’t in whether the resulting “facts” are immutable but rather the strength with which we intend to make the claim.  In the forensics case, we are making a claim to the best of our incomplete knowledge about what happened.  In the case of mathematical proof, we are making a claim that should be true forever.</p>
+<p>In my opinion, the difference between “evidence” and “proof” exists to quantify the strength of our assertion that the claim or conjecture is true.  Claims can roughly be placed on a continuum from weak to strong.  Some claims, such as “a human authored this blog post”, are weak in nature and need little evidence.  Other claims, such as “the author of this blog post can see through walls”, is a hard to believe as there is good evidence that humans can’t see through walls. To prove the second claim I would hope that you demand really strong “evidence”.  Perhaps in the form of a demonstration, a scientific model for how I can do it, and validation from peer review.</p>
+<p>Due to the continuum for strength of evidence described above, I consider proofs to be a form of evidence.  Proofs, in the mathematical sense, being the strongest form of evidence.  Claims made by politicians would be on the extreme other end of my continuum.</p>
+<p>The strength of the evidence for the claim has practical applications too.  I wouldn’t engineer a shuttle to the moon based on arguments built by politicians.  I would base my engineering on mathematical proofs as getting to the moon requires a high degree of correctness.</p>
+<p>So then, what level of evidence is right if I need to be correct?</p>
+<h1 id="evidence-based-correctness">Evidence Based Correctness</h1>
+<p>Now we’re really at the heart of the matter.  Sometimes it just doesn’t matter if we’re correct or not, for example when arguing with a spouse.  Other times it matters deeply, like when we want to engineer a shuttle to the moon.</p>
+<p>While mathematics is obsessed with being unequivocally true, other branches of science have been trying to deepen their understanding while accepting a greater risk of being wrong.  This results in a different level of evidence required for progress.</p>]]></summary>
+</entry>
+<entry>
+    <title>Picking a GUI library to use with OpenGL</title>
+    <link href="http://blog.codersbase.com/posts/2011-03-17-picking-gui-library.html" />
+    <id>http://blog.codersbase.com/posts/2011-03-17-picking-gui-library.html</id>
+    <published>2011-03-17T00:00:00Z</published>
+    <updated>2011-03-17T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p>OpenGL provides nice real-time graphics primitives, but to get started with OpenGL you have to first get an OpenGL rendering context on the screen.</p>
+<p>For years the simplest cross-platform way to do this was by using the GLUT library.  GLUT is unattractive for reasons I’ll explain towards the end, but it’s easy to get started using it. This tends to make it a nice choice for beginners.  These days there are many alternatives to GLUT for those of us who want simplicity and cross-platform compatibility.  Here I will focus on Haskell options.</p>
+<iframe width='500' height='300' frameborder='0' src='https://spreadsheets.google.com/pub?hl=en&hl=en&key=0AhzGR3A_VvepdHBLTHg1UTdSYnpFOXY5MF9pYXdBbWc&single=true&gid=0&output=html&widget=true'></iframe>
+
+<p>Full spreadsheet view <a href="https://spreadsheets.google.com/pub?hl=en&hl=en&key=0AhzGR3A_VvepdHBLTHg1UTdSYnpFOXY5MF9pYXdBbWc&single=true&gid=0&output=html">here</a>.</p>
+<p>The significance of the license columns is that pure Haskell code which has a standard LGPL license forces your binaries to also abide by the LGPL restrictions. This is due to GHC’s cross-module inlining. On the other hand, if a foreign library has an LGPL license but BSD3 Haskell bindings then this does not apply. See for example, the SDL bindings. License entries that read “LGPL with linking exception” mean that using it with Haskell code does not cause your binaries to fall under LGPL restrictions due to the license explicitly granting that exception.</p>
+<p>The use of <tt>atexit()</tt> can lead to subtle problems so I’ve tried to highlight which libraries use it. Please let me know if you see a mistake in my categorizing the use of <tt>atexit()</tt>.</p>
+<p>The requirement of extra libraries is more of a hassle for people who will use cabal-install to get and build your program. If your project is a popular one with a large audience you will want to create an installer for end-users, in which case you could offer to install the extra libraries when they install your program.</p>
+<p>For simple uses, such as learning or demos programs, my current recommendation is <a href="http://hackage.haskell.org/package/GLFW-b">GLFW-b</a>. <a href="http://hackage.haskell.org/package/SDL">SDL</a> also makes a nice choice, but it requires more from your windows users as they will have to install the libraries separately. Linux and OSX users will have to install the libraries but they have the option of using a package manager to handle the install.</p>
+<p>Gtk2hs and wxHaskell are harder for novices as they come with restrictions to what you can do. For example, at one point in time gtk2hs programs had to be very careful when using threading. I don’t know if this is still an issue though.</p>
+<p>Surprisingly, all of the libraries in my table have good documentation. Although, in some cases the Haskell bindings themselves do not have documentation. Typically it’s not an issue to go by the original library docs.</p>
+<p><a href="http://hackage.haskell.org/package/GLUT">GLUT</a> is attractive, in part because it’s well known, it’s included in the Haskell Platform, and lots of documentation and examples exist. Keep in mind, it’s technically not free software (although the source is available), it uses <tt>atexit()</tt>, and even though it’s included in the Haskell Platform windows users will still need to download glut32.dll and install it in their application build directory. If you have the urge to use GLUT, try to use freeglut as your implementation.</p>
+<p>Based on the above list of offers, you can see that it would be very nice if someone created a library based on the APIs of GLFW, SDL, or GLUT, but did a direct binding to the native APIs of windows, OSX, and linux so that we’d have a “pure” Haskell option that doesn’t require extra C libraries. For this to become a nice solution it would be nice if the Haskell Platform bundled a binding to native OSX APIs.</p>
+<p>I hope the above comparisons help you to pick the right GUI library for your next project that uses OpenGL!</p>]]></summary>
+</entry>
+<entry>
+    <title>Composability, laziness, testing, and proofs (oh my!)</title>
+    <link href="http://blog.codersbase.com/posts/2010-09-19-composability-laziness-testing.html" />
+    <id>http://blog.codersbase.com/posts/2010-09-19-composability-laziness-testing.html</id>
+    <published>2010-09-19T00:00:00Z</published>
+    <updated>2010-09-19T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p><strong>UPDATED:</strong> I forgot to mention types as a reason for composability!</p>
+<p>By now you’ve probably all seen the excellent talk that <a href="http://video2010.scottishrubyconference.com/show_video/11/1">Larry Diehl gave at the Scottish Ruby convention this year</a>. The talk encourages the audience to think of proofs in languages such as <a href="http://en.wikipedia.org/wiki/Agda_(theorem_prover)">Agda</a> as composable unit tests.</p>
+<p>If you’re an experienced Haskeller then I won’t have to explain to you why composability is easier in Haskell than other languages, but let me try anyway as it’s easy to forget why composability is so important.</p>
+<ol>
+<li>
+Haskell is pure so we get a lot of composability just from knowing statically the precise set of inputs a function takes. This means we can easily take a function from one context and use it in another one. We’ve removed any hidden or implicit state. It’s all lexically known.
+</li>
+<li>
+Laziness is another reason why Haskell code is highly composable. The Haskell prelude is full of composable list functions. By operating on (potentially) infinite data structures and only computing as much as is needed you can define combinators that glue together rather nicely. For example, the functions <tt>take</tt> and <tt>iterate</tt> allow you to define loops as infinite sequences while allowing you to only process some finite prefix of the sequence.
+</li>
+<li>
+Another major reason Haskell is highly composable is higher-order functions. Functions like <tt>foldr</tt>, <tt>foldl</tt>, and <tt>bracket</tt> demonstrate that you can write the structure once and reuse it with whatever logic you need in the body.
+</li>
+<li>
+Haskell has rich types that correspond accurately to what a function takes and what it computes, although they are not as precise as we get with dependently typed languages. These types give us hints about when it’s safe to compose things by giving us a bit of machine checkable documentation. Conversely, when things cannot fit together as written we will get type errors.
+</li>
+</ol>
+
+<p>As you can see, each of these features enhances and enables opportunities for composability which makes us as programmers more efficient, allows us to program at a level closer to our specification, and means we can get things right once and reuse it later.</p>
+<p>How does this relate to testing?</p>
+<p>First let’s review the <a href="http://en.wikipedia.org/wiki/Curry%E2%80%93Howard_correspondence">Curry-Howard correspondence</a>, which says that our types are logical propositions and our programs represent proofs of those propositions.</p>
+<p>Unit tests are evidence that our code does what we expect for some finite subset of the inputs. While they are not proofs that our code works in general they do provide some assurance. Larry’s point is that in some languages, such as Agda, you can write lemmas that are full blown proofs of correctness using the Curry-Howard correspondence. Furthermore, you can compose these lemmas into theorems.</p>
+<p>My question is, can we compose unit tests in Haskell?</p>
+<p>It occurs to me that typically with unit tests we don’t know what logical proposition the unit test corresponds to. Often the type is very simple, such as <tt>Int -&gt; Int -&gt; Bool</tt>, or <tt>IO ()</tt>. I suspect that to make unit tests composable in the same way as lemmas we need to know what logical statement corresponds to each unit test. We could compose the body of the unit tests, which corresponds to composing their proofs, but that’s not really scaleable and essentially amounts to copy&amp;paste programming.</p>
+<p>This is where <a href="http://www.haskell.org/haskellwiki/Introduction_to_QuickCheck">QuickCheck</a> comes in. In QuickCheck we keep the proposition at the value level, but we take a step forward in at least stating the proposition. We also try to ensure the property for more than manually picked inputs by using a random value generator or clever value enumeration.</p>
+<p>Now my question turns into, have you ever considered composing your QuickCheck properties to build bigger properties? Can we build QuickCheck theorems from our QuickCheck lemmas?</p>
+<p>Pushing this a bit more, can we redesign QuickCheck so that the properties are reflected in the types of the properties? Would this help make QuickCheck properties more composable or would it lead to Haskell type hackery madness?</p>
+<p>Does anyone have pointers to work on this?</p>]]></summary>
+</entry>
+<entry>
+    <title>Fun, but pointless, code metrics</title>
+    <link href="http://blog.codersbase.com/posts/2010-08-29-fun-pointless-code-metrics.html" />
+    <id>http://blog.codersbase.com/posts/2010-08-29-fun-pointless-code-metrics.html</id>
+    <published>2010-08-29T00:00:00Z</published>
+    <updated>2010-08-29T00:00:00Z</updated>
+    <summary type="html"><![CDATA[I’m not really sure what motivated this, but I just used <a href="http://cloc.sourceforge.net/">cloc</a> to count the lines of code in both the darcs source and the git source.  Here are the numbers. The git source tree:
+<pre>1951 text files.
+    1836 unique files.                                          
+     848 files ignored.
+
+http://cloc.sourceforge.net v 1.51  T=15.0 s (72.3 files/s, 20377.3 lines/s)
+--------------------------------------------------------------------------------
+Language                      files          blank        comment           code
+--------------------------------------------------------------------------------
+C                               267          15517          13469         100133
+Bourne Shell                    589          15127           5508          84826
+Perl                             40           3798           3441          23825
+Tcl/Tk                           39           1453            375           9762
+C/C++ Header                     99           1977           3557           8301
+make                             12            413            434           2673
+Bourne Again Shell                1            144            110           2165
+Lisp                              2            231            170           1779
+Python                           13            465            442           1384
+ASP.Net                           8            141              0            931
+m4                                2             87             21            858
+CSS                               2            154             24            710
+Javascript                        2            113            319            477
+Assembly                          1             26            100             98
+XSLT                              7             15             29             77
+DOS Batch                         1              0              0              1
+--------------------------------------------------------------------------------
+SUM:                           1085          39661          27999         238000
+--------------------------------------------------------------------------------
+</pre>
+The darcs source tree:
+<pre >561 text files.
+     549 unique files.                                          
+      57 files ignored.
+
+http://cloc.sourceforge.net v 1.51  T=189.0 s (2.7 files/s, 298.0 lines/s)
+--------------------------------------------------------------------------------
+Language                      files          blank        comment           code
+--------------------------------------------------------------------------------
+Haskell                         169           4361           7374          27760
+Bourne Shell                    300           2071           2869           8333
+C                                 7            325            153           1494
+HTML                              5             41              4            316
+C/C++ Header                     12             92             83            308
+Bourne Again Shell                3             51             95            180
+Perl                              2             43             36            130
+CSS                               1             21              3             79
+make                              1             12              6             53
+Lisp                              1              5              6             23
+--------------------------------------------------------------------------------
+SUM:                            501           7022          10629          38676
+--------------------------------------------------------------------------------
+</pre>
+<p>Take those categories with a grain of salt. For example, the darcs source does not have any lisp files. It is interesting that git has 200k more lines than darcs. I’m not sure what that says. C is far more verbose than Haskell? Although, that’s not really fair because they also have an order of magnitude more shell code. If you’re just comparing C to Haskell it’s a factor of about 4.</p>]]></summary>
+</entry>
+<entry>
+    <title>Takusen Tutorial, Part 1: Hello, Takusen</title>
+    <link href="http://blog.codersbase.com/posts/2010-08-01-takusen-tutorial.html" />
+    <id>http://blog.codersbase.com/posts/2010-08-01-takusen-tutorial.html</id>
+    <published>2010-08-01T00:00:00Z</published>
+    <updated>2010-08-01T00:00:00Z</updated>
+    <summary type="html"><![CDATA[With the recent release of <a href="http://www.haskell.org/pipermail/haskell-cafe/2010-July/081224.html">Takusen 0.8.6</a>, several people asked for a tutorial.  Hopefully I can help people get up to speed.
+<div>
+
+</div>
+<div>
+If you haven’t heard, Takusen is an industrial strength database library written in Haskell.  Some of the reasons I like Takusen over its competitors:
+</div>
+<div>
+<ul>
+<li>
+Good performance
+</li>
+<li>
+Supports the iteratee style so that you can stream your results from the database
+</li>
+<li>
+BSD license
+</li>
+<li>
+It has a test suite
+</li>
+</ul>
+</div>
+<div>
+The BSD license is nice because it means we can use it at Galois, and we do.  A project I worked on recently used Takusen to communicate with the database.  I found Takusen easy to debug with and it worked quite well.
+</div>
+<div>
+
+</div>
+<div>
+If you like to start by reading lots of background information you might like to read these articles, but I will not assume you have read them in this tutorial:
+</div>
+<div>
+<ul>
+<li>
+<a href="http://okmij.org/ftp/Streams.html">http://okmij.org/ftp/Streams.html</a>
+</li>
+<li>
+<a href="http://okmij.org/ftp/Haskell/regions.html">http://okmij.org/ftp/Haskell/regions.html</a>
+</li>
+</ul>
+</div>
+<div>
+In this tutorial you will learn:
+</div>
+<div>
+<ol>
+<li>
+How to install Takusen with the right backend(s) for your database.
+</li>
+<li>
+How to write a “Hello, Takusen!” query.
+</li>
+</ol>
+</div>
+<div>
+<span class="Apple-style-span" style="font-size: x-large;">Let’s Get Started!</span>
+</div>
+<div>
+<p>If you already have your database setup, just skip to section 2 below.</p>
+<span class="Apple-style-span" style="font-size: x-large;">1. Getting things Setup!</span>
+</div>
+<div>
+First off, I will describe the environment I used to write this tutorial.  I like to develop using virtual machines whenever I can.  This allows me to start from a clean environment without interfering with any of my other projects.  I chose <a href="http://www.virtualbox.org/">Virtual Box</a> as my emulation software.  I installed Debian Squeeze, from <a href="http://www.debian.org/devel/debian-installer/">here</a>.
+</div>
+<div>
+
+</div>
+<div>
+During the install I requested a web server, ssh server, and SQL database.  My normal account name is ‘dagit’, as you will see below.
+</div>
+<div>
+
+</div>
+<div>
+After the install finished, I installed the following packages:
+</div>
+<div>
+<ul>
+<li>
+sudo
+</li>
+<li>
+pkg-config
+</li>
+<li>
+ghc6
+</li>
+<li>
+ghc6-prof
+</li>
+<li>
+cabal-install
+</li>
+<li>
+libz-dev
+</li>
+<li>
+postgresql-server-dev-8.4
+</li>
+<li>
+sqlite3
+</li>
+<li>
+libsqlite3-dev
+</li>
+<li>
+unixodbc-dev
+</li>
+</ul>
+</div>
+<div>
+If you are only going to use a specific database then you can safely leave out the other database packages above.  For example, you only need unixodbc-dev if you are going to install the ODBC backend, see below.  This command should install everything above:
+</div>
+<pre class="brush: shell;toolbar: false;">$ apt-get install sudo pkg-config ghc6 ghc6-prof cabal-install libz-dev postgresql-server-dev-8.4 sqlite3 libsqlite3-dev unixodbc-dev</pre>
+<div>
+Next, I ran:
+</div>
+<pre class="brush: shell;toolbar: false;">$ cabal install QuickCheck --constraint="==1.*"</pre>
+At this point you should have all the dependencies of Takusen.  The next step is to install the backends we might want to use.  For example:
+<pre class="brush: shell;toolbar: false;">$ cabal install Takusen -fpostgres -fsqlite -fodbc</pre>
+<p>The command above will give us the postgres, sqlite, and odbc backends.  If you don’t need a backend, just omit it during the cabal-install command above. At this point I installed a few other things such as emacs and darcs to make my development experience friendlier.</p>
+Configuring postgres is beyond the scope of this tutorial, but for reference here are the commands I used to get started with a “hellotakusen” database.
+<pre class="brush: shell;toolbar: false;">$ sudo su postgres # Switching to postgres user
+$ createuser dagit # same as your unix account name
+Shall the new role be a superuser? (y/n) y
+$ createdb dagit # create dagit's default db</pre>
+I made myself a superuser for convenience, after all this is just a dev machine.   Now switch back to your normal user account.  In my case, that account is ‘dagit’.  Now as ‘dagit’, I run:
+<pre class="brush: shell;toolbar: false;">$ createdb hellotakusen</pre>
+This gives us a demo database separate from the default user database.  Let’s double check our database:
+<pre class="brush: shell;toolbar: false;">$ psql -d hellotakusen
+psql (8.4.4)
+Type "help" for help.
+
+
+hellotakusen=#</pre>
+<div>
+Okay, looks good.  Now let’s try a simple query:
+</div>
+<pre class="brush: sql;toolbar: false;">hellotakusen=# select 'Hello, Takusen!';
+
+?column?
+----------------
+Hello, Takusen!
+
+(1 row)</pre>
+<div>
+<span class="Apple-style-span" style="font-size: x-large;">2. Time do a query with Takusen!</span>
+</div>
+<div>
+Now we’re ready to do the same thing, but from Haskell.  Let’s start with GHCi.  I’ll run through the minimum set of commands to get this query working, then I’ll explain what we’re doing at each step, and why:
+</div>
+<pre class="brush: shell;toolbar: false; highlight: [1,6,7]">$ ghci
+GHCi, version 6.12.1: http://www.haskell.org/ghc/  :? for help
+Loading package ghc-prim ... linking ... done.
+Loading package integer-gmp ... linking ... done.
+Loading package base ... linking ... done.
+Prelude&gt; :m + Database.PostgreSQL.Enumerator
+Prelude Database.PostgreSQL.Enumerator&gt; let connection = connect [CAdbname "hellotakusen"]
+Loading package syb-0.1.0.2 ... linking ... done.
+Loading package base-3.0.3.2 ... linking ... done.
+Loading package mtl-1.1.0.2 ... linking ... done.
+Loading package old-locale-1.0.0.2 ... linking ... done.
+Loading package old-time-1.0.0.3 ... linking ... done.
+Loading package time-1.1.4 ... linking ... done.
+Loading package Takusen-0.8.6 ... linking ... done.
+</pre>
+<div>
+Now we have a connection structure to our Postgres database.  Now we switch to the interface just one level above the database specific one to define an iteratee to fetch our results.
+</div>
+<pre class="brush: hs;toolbar: false;">Prelude Database.PostgreSQL.Enumerator&gt; :m + Database.Enumerator
+Prelude Database.PostgreSQL.Enumerator Database.Enumerator&gt; let { iter :: Monad m =&gt; String -&gt; IterAct m (Maybe String); iter msg accum = result' (Just msg) }</pre>
+<div>
+We will use <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">iter</span> with <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">doQuery</span>, to fetch the result of our query,  and immediately print it like this:
+</div>
+<pre class="brush: hs;toolbar: false;">Prelude Database.PostgreSQL.Enumerator Database.Enumerator&gt; :m + Control.Monad.Trans
+Prelude Database.PostgreSQL.Enumerator Database.Enumerator Control.Monad.Trans&gt; withSession connection (doQuery (sql "select 'Hello, Takusen!'") iter Nothing &gt;&gt;= \(Just r) -&gt; liftIO (putStrLn r))
+
+Hello, Takusen!
+</pre>
+<div>
+<span class="Apple-style-span" style="font-family: Times, 'Times New Roman', serif;"><span class="Apple-style-span" style="font-size: x-large;">Now it’s time to start explaining!</span></span>
+</div>
+<div>
+<span class="Apple-style-span" style="font-family: Times, 'Times New Roman', serif;"> </span>
+</div>
+<div>
+<span class="Apple-style-span" style="font-family: Times, 'Times New Roman', serif;">We have to give a type signature to </span>iter<span class="Apple-style-span" style="font-family: Times, 'Times New Roman', serif;"> or else we’ll get an incomprehensible error message involving functional dependencies:</span>
+</div>
+<pre class="brush: hs;toolbar: false;">Prelude Database.PostgreSQL.Enumerator Database.Enumerator Control.Monad.Trans&gt; withSession connection (doQuery (sql "select 'Hello, Takusen!'") iter Nothing &gt;&gt;= \(Just r) -&gt; liftIO (putStrLn r))
+
+:1:24:
+    Overlapping instances for Database.Enumerator.QueryIteratee
+                                (DBM mark Session)
+                                Database.PostgreSQL.Enumerator.Query
+                                (a -&gt; t -&gt; m (IterResult (Maybe a)))
+                                (Maybe String)
+                                Database.PostgreSQL.Enumerator.ColumnBuffer
+      arising from a use of `doQuery' at :1:24-75
+    Matching instances:
+      instance [overlap ok] (Database.Enumerator.QueryIteratee
+                               m q i' seed b,
+                             DBType a q b) =&gt;
+                            Database.Enumerator.QueryIteratee m q (a -&gt; i') seed b
+        -- Defined in Database.Enumerator
+      instance [overlap ok] (DBType a q b, MonadIO m) =&gt;
+                            Database.Enumerator.QueryIteratee
+                              m q (a -&gt; seed -&gt; m (IterResult seed)) seed b
+        -- Defined in Database.Enumerator
+    (The choice depends on the instantiation of `mark, a, t, m'
+     To pick the first instance above, use -XIncoherentInstances
+     when compiling the other instance declarations)
+    In the first argument of `(&gt;&gt;=)', namely
+        `doQuery (sql "select 'Hello, Takusen!'") iter Nothing'
+    In the second argument of `withSession', namely
+        `(doQuery (sql "select 'Hello, Takusen!'") iter Nothing
+        &gt;&gt;=
+          \ (Just r) -&gt; liftIO (putStrLn r))'
+    In the expression:
+        withSession
+          connection
+          (doQuery (sql "select 'Hello, Takusen!'") iter Nothing
+         &gt;&gt;=
+           \ (Just r) -&gt; liftIO (putStrLn r))
+</pre>
+<div>
+The problem itself is fairly simple.  If we don’t give the explicit signature, then the inferred type of <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">iter</span> is:
+</div>
+<pre class="brush: hs;toolbar: false;">iter :: (Monad m) =&gt; a -&gt; t -&gt; m (IterResult (Maybe a))</pre>
+<div>
+<span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;"> </span>
+</div>
+<div>
+Compared with our supplied type:
+</div>
+<div>
+<pre class="brush: hs;toolbar: false;">iter :: Monad m =&gt; String -&gt; IterAct m (Maybe String)</pre>
+</div>
+<div>
+<span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;"> </span>
+</div>
+<div>
+You should be asking yourself, what is the difference between “<span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">t -&gt; m (IterResult (Maybe a))</span>” and “<span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">IterAct m (Maybe String)</span>”.  Checking with the Takusen <a href="http://hackage.haskell.org/packages/archive/Takusen/0.8.6/doc/html/Database-Enumerator.html#t%3AIterAct">haddock</a>, we see this definition:
+</div>
+<pre class="brush: hs;toolbar: false;">type IterAct m seedType = seedType -&gt; m (IterResult seedType)
+</pre>
+<div>
+Let’s expand the <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">IterAct</span> type so we can more clearly compare the inferred type to the correct type:
+</div>
+<pre class="brush: hs; toolbar: false;">iter :: Monad m =&gt; String -&gt; Maybe String -&gt; m (IterResult (Maybe String))
+</pre>
+<div>
+So there is the problem.  If we don’t write the explicit type signature there was nothing in our definition of <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">iter</span> to help ghci infer that the second parameter is a <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">Maybe</span>.  You’ll also noticed that in the type synonym, <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">IterAct</span> that it is a function from a seed type to an action containing an <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">IterResult</span>.
+</div>
+<div>
+
+</div>
+<div>
+The seed here works just like the seed in a left fold.  The type of foldl is:
+</div>
+<pre class="brush: hs; toolbar: false;">foldl :: (a -&gt; b -&gt; a) -&gt; a -&gt; [b] -&gt; a
+</pre>
+<div>
+The second parameter is the seed type of <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">foldl</span> and it is of type <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">a</span>, here.  If you expand out a left fold, you will get an expression like this:
+</div>
+<pre class="brush: hs; toolbar: false;">foldl f z [a,b,c,d] =&nbsp;f (f (f (f z a) b) c) d
+</pre>
+<div>
+
+</div>
+<div>
+When we pass <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">iter</span> to <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">doQuery</span> it uses <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">iter</span> much like <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">foldl</span> uses <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">f</span>.  In the call to <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">foldl</span>, I called the seed <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">z</span>, and it is passed as the first parameter to <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">f</span>.  First <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">f</span> will combine <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">z</span> and <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">a</span>.  Then the result will be passed to <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">f</span> along with <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">b</span>.  The result keeps getting fed to <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">f</span> in this manner till we hit the end of the list.  So the first parameter to <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">f</span> is an accumulator because <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">f</span> can pass to itself the result of the previous call of <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">f</span>.  The first time <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">f</span> is called it will receive the seed value as the accumulator.
+</div>
+<div>
+
+</div>
+<div>
+When we defined <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">iter</span> we used the same exact convention, but you didn’t see the seed in the definition because the function <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">result’</span> hides this detail for convenience.  You can see it in the type when we expand out the type synonym <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">IterAct</span>.
+</div>
+<div>
+
+</div>
+<div>
+Where is the seed?  The seed was the last parameter we passed to <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">doQuery</span>.  In the example above, it was <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">Nothing</span>, and <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">iter</span> ignored it.  As this tutorial series expands, I will show you how to use the seed value.
+</div>
+<div>
+
+</div>
+<div>
+<span class="Apple-style-span" style="font-size: x-large;">Time to recap.</span>
+</div>
+<div>
+
+</div>
+<div>
+One simple rule is: Always try to give an explicit type signature to your iteratee function, here we called it <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">iter</span>.  If you get it wrong, the error message will be more forgiving than the error message you get from using it with <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">doQuery</span>.
+</div>
+<div>
+
+</div>
+<div>
+Another important lesson we learned is that our iteratees work with <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">doQuery</span> in exactly the same way as functions passed to <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">foldl</span>.  Specifically, they take an accumulator that has the same type as the seed we pass to <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">doQuery</span>.  The iteratee is responsible for combining the accumulator and a ‘current value’ to produce a result.  In a future tutorial in this series, I will show you how to accumulate a list of results in the iteratee.
+</div>
+
+
+]]></summary>
+</entry>
+<entry>
+    <title>Delimited Continuations and version control: an update</title>
+    <link href="http://blog.codersbase.com/posts/2010-06-10-delimited-continuations-and-version-control-2.html" />
+    <id>http://blog.codersbase.com/posts/2010-06-10-delimited-continuations-and-version-control-2.html</id>
+    <published>2010-06-10T00:00:00Z</published>
+    <updated>2010-06-10T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p>Last time I presented the idea that version control and delimited continuations are related.  I left off with a question how how to make Darcs fit this model.  I think I understand now what I was missing.</p>
+<p>I forgot to think about Darcs operations in terms of the intermediate operations that get performed.  In Darcs, everything is based on commuting patches, even merging.  Therefore, to see how Darcs fits into this model it’s important to think about commuting patches in terms of delimited continuations.</p>
+<p>Specifically, I now believe that commuting two patches introduces marks that can be <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">shift</span>ed to later.</p>
+<p>I have several ideas for the next steps of this.  One is to start modeling toy versions of svn and darcs in Haskell via delimited continuations.  After that, I would like to figure out the correspondence between the delimited continuations that I’ve identified and their data structure reification as zippers.  I hope to have more about that later.</p>
+<p>Judging by a paper written by Oleg, there should be a natural way to convert the delimited continuation representation into a zipper.  Investigating this model might shed light on the Darcs patch model, or even lead to a more concise formalism.</p>]]></summary>
+</entry>
+<entry>
+    <title>Delimited Continuations and Version Control</title>
+    <link href="http://blog.codersbase.com/posts/2010-06-06-delimited-continuations-and-version-control.html" />
+    <id>http://blog.codersbase.com/posts/2010-06-06-delimited-continuations-and-version-control.html</id>
+    <published>2010-06-06T00:00:00Z</published>
+    <updated>2010-06-06T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p>Delimited continuations give us a way to create markers that we can jump back to. We can construct the future of the computation, work with the computation so far, or abort the current continuation and go down a new path (create a new future).</p>
+These primitives have a natural correspondence with version control systems that snapshot the world like SVN.  Focusing on SVN for a moment:
+<ul>
+<li>
+The current continuation is the transformation of repository state that you’re working on.  It’s the diff you’re creating.
+</li>
+<li>
+For commits, each revision created by commit is a marker, so we model this with <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">reset</span><span class="Apple-style-span" style="font-family: inherit;">.</span>
+</li>
+<li>
+Checking out an older revision, or reverting changes, corresponds to <span class="Apple-style-span" style="font-family: inherit;">a </span><span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">shift</span><span class="Apple-style-span" style="font-family: inherit;">.  We discard the current continuation and move back to a marker created by a specific </span><span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">reset</span><span class="Apple-style-span" style="font-family: inherit;">.</span>
+</li>
+<li>
+<span class="Apple-style-span" style="font-family: inherit;">Updating consists of having the client copy learn the current state of the continuation on the server and applying it to the local copy.</span>
+</li>
+<li>
+Starting a branch corresponds to a <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">reset</span><span class="Apple-style-span" style="font-family: inherit;">.</span>
+</li>
+<li>
+<span class="Apple-style-span" style="font-family: inherit;">Merging two branches is a bit trickier I suspect.  I haven’t worked out all the details sufficiently to convince myself I have it right, but here is how I think this case works.  The merge first </span><span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">shift</span><span class="Apple-style-span" style="font-family: inherit;">s to each of the markers and then combines those two continuations into one future.  The part that seems weird to me about this, is that I haven’t really seen examples of delimited continuations were the continuation of two different markers (prompts) were combined.</span>
+</li>
+</ul>
+<div>
+Now, if you accept the above it gives us some intuition to build on.  Although my correspondence is terribly informal at the moment, if we took some time to make it formal by working out enough details to model it in, say, Haskell, then we’d have a nice formal backing for how SVN works.  I think the above model applies equally well to git, but I’m not confident with git’s model.
+</div>
+<div>
+
+</div>
+<div>
+One insight the above gives, is that the way merging works is not described by the continuations in general.  It’s up to the exact combining function to determine the merge.  We know that an automatic merge can fail in practice due to things like conflicts between the changes in the branches.  So, in the SVN implementation considerable work has gone into implementing logic for creating the proper continuation.
+</div>
+<div>
+
+</div>
+<div>
+Now, in general when a merge, or update, is performed human intervention may be required.  This typically happens when the changes are in conflict.  What this means for our model is that in general the creation of the continuation requires knowledge outside of our model.  What does that correspond to?  Well, it’s essentially saying that calculating the correct continuation to resolve the merge is <b>non-deterministic</b>!
+</div>
+<div>
+
+</div>
+<div>
+In other words, this continuation view of version control gives us a rigorous way to talk about our intuition.  Of course we can easily tell that merging is going to require human intervention without needing to study delimited continuations, but this framework of reasoning now gives us a more mathematical way to say it.
+</div>
+<div>
+
+</div>
+<div>
+The next question is:   How does the delimited continuation model of vcs apply to Darcs?
+</div>
+<div>
+
+</div>
+<div>
+So far I’m not sure.  I suspect, without working through the details, that in Darcs, every time you record a patch multiple <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">reset</span><span class="Apple-style-span" style="font-family: inherit;">s happen, instead of just one.  The model really breaks down for Darcs because you can seemingly visit points in “history” that did not exist when the patches were created, but they are valid repository states.</span>
+</div>
+<div>
+<span class="Apple-style-span" style="font-family: inherit;"> </span>
+</div>
+<div>
+<span class="Apple-style-span" style="font-family: inherit;">For example, imagine a repository that only exists locally.  You create a sequence of patches.  Now, take a patch in the middle that can be commuted to the end of the patch sequence.  Doing so has not created a new repository state; so far this is fine with the above model as no new markers need to be created.  Suppose we remove the patch from the end of the patch sequence.  This is exactly how darcs unpull works.  The funny thing is, we’ve now created a state that never existed previously.  So in the delimited continuation model, what marker did we just </span><span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">shift</span><span class="Apple-style-span" style="font-family: inherit;"> to?</span>
+</div>
+<div>
+<span class="Apple-style-span" style="font-family: inherit;"> </span>
+</div>
+<div>
+<span class="Apple-style-span" style="font-family: inherit;">I don’t know the answer yet, but I think it’s an interesting question.  I suspect there are multiple “correct” answers, but that only some answers will yield elegant and robust models here.</span>
+</div>
+
+
+]]></summary>
+</entry>
+<entry>
+    <title>Type-Correct Changes -- A Safe Approach to Version Control Implementation</title>
+    <link href="http://blog.codersbase.com/posts/2009-03-25-type-correct-changes.html" />
+    <id>http://blog.codersbase.com/posts/2009-03-25-type-correct-changes.html</id>
+    <published>2009-03-25T00:00:00Z</published>
+    <updated>2009-03-25T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p>On March 20th, 2009, I successfully defended my Master’s thesis in Computer Science.</p>
+<p><strong>Abstract:</strong></p>
+<blockquote>
+<p>Ensuring correctness of real-world software applications is a challenging task. Testing can be used to find many bugs, but is typically not sufficient for proving correctness or even eliminating entire classes of bugs. However, formal proof and verification techniques tend to be very heavy weight and are simply not available for day to day use in many common programming environments.</p>
+<p>We demonstrate a form of light-weight proof assistant by using the type checking features of the programming language Haskell with existing extensions. We apply this work to the Open Source version control system Darcs. The properties checked by our approach are derived directly from the data model used by Darcs. This allows us to eliminate entire classes of bugs at compile time. We also examine how these techniques improve the quality of the Darcs codebase and the challenges that arise when applying these techniques in practice.</p>
+</blockquote>
+<p>You can read the <a href="http://files.codersbase.com/thesis.pdf">full thesis here</a>. The slides from my <a href="http://files.codersbase.com/thesistalk.pdf">presentation are located here</a>.</p>
+<p>The bottom line is that we used Generalized Algebraic Data Types (GADTs) to enforce proper patch manipulations. In the Darcs implementation, patches are stored in sequences and rearranging those sequences can only be done is very specific ways. Our use of GADTs allowed us to express those constraints using existentially quantified types, phantom types, and witness types. If you’ve ever wondered how to use GADTs in real-world software, this serves as a very illustrative example.</p>]]></summary>
+</entry>
+<entry>
+    <title>Phantom Types, Existentials and Controlling Unification -- Part 1</title>
+    <link href="http://blog.codersbase.com/posts/2008-11-10-phantom-types.html" />
+    <id>http://blog.codersbase.com/posts/2008-11-10-phantom-types.html</id>
+    <published>2008-11-10T00:00:00Z</published>
+    <updated>2008-11-10T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p>A phantom type is a type that has no value associated with it, such as the following:</p>
+<pre><code>data P phantom = P Int</code></pre>
+<p>Above, the type “phantom” has no value associated with it on the right-hand side of the equal sign. This means that whenever we construct a value of type P we also need to give a type for phantom, but because it has no value associated with it to constrain its type the type system can make it unify with anything. For example these are all valid:</p>
+<pre><code>P 5 :: P String
+P 5 :: P [Int]
+P 5 :: P (IO ())</code></pre>
+<p>The reason we care about phantom types is that they allow us to embed extra bits of information in our types. In this regard, you can think of phantom types as a tagging system for types. This allows you to, for example, encode a simpler type system within Haskell’s types. You could use this when making an evaluator for a language in Haskell.</p>
+<p>Now, there is a well known problem with the unification above. The problem is that P can be made to unify with all kinds of things. So people often use smart constructors to control the unification. For example, P would be declared in a module and the data constructor would not be exported from that module and instead you’d export functions like this:</p>
+<pre><code>mkIntP :: Int -&gt; P Int
+mkIntP n = P n
+
+mkStringP :: String -&gt; P String
+mkStringP s = P (length s)</code></pre>
+<p>Now you’ve controlled how the unification of the phantom type by not allowing users of your data type to choose how it unifies.</p>
+<p>Suppose we don’t know the full extent of the types that the user wants the phantom to unify with. Which is to say, there are an unbounded number of types for which the phantom can unify but you want to give the user of your code a way to control the unification.</p>
+<p>Let’s talk about existentials for a moment. We can give existential types by using a language extension that allows us to explicitly give a “forall” in the type. Now the oddity of giving an existential with a universal quantification is well documented but I won’t discuss it here. You might create a Seal type like this:</p>
+<pre><code>data Seal a = forall x. Seal (a x)</code></pre>
+<p>Now when we put a value inside a Seal we forget everything we know about the type x. The only thing we remember about x is that it exists. This means that when we open up the seal:</p>
+<pre><code>f :: Seal a -&gt; ()
+f (Seal a) = ()</code></pre>
+<p>We have to invent a new type for x. Here the type system is smart and creates a new fresh name, let’s call it an eigenvariable, for x inside the pattern match of f.</p>
+<p>This eigenvariable for x is distinct. The only type it is equal to is itself. This is because when we put x in the Seal we agreed to forget everything we ever knew about it–except that it exists. We could try this:</p>
+<pre><code>g :: Seal a -&gt; a x
+g (Seal a) = a</code></pre>
+<p>Here the type system is very smart and complains. The error message is a bit confusing, but what it is trying to tell us is that we cannot safely let the eigenvariable for x escape to a higher scope. Letting this happen has implications I won’t go into.</p>
+<p>Now, remember what I was saying about letting phantom types unify and wanting to control the unification? Well, Seal gives us a way to let the user put whatever types they want in the phantom type <b>and</b> it gives the user a way to control how that type unifies!</p>
+<pre><code>mkSealP :: a -&gt; Seal P
+mkSealP a = Seal (P a)</code></pre>
+<p>Now the user of our code can make a P with an arbitrary phantom type that we didn’t have to anticipate with a smart constructor and the user gains back control over how the phantom type of P will unify. With the current bit of code it won’t unify with much :)</p>
+<p>Now we’ve moved the problem from unifying with too much to not unifying with anything. Next time I’ll discuss some strategies for recovering information about x so that you can do something meaningful with that type.</p>]]></summary>
+</entry>
+<entry>
+    <title>Darcs Hacking Sprint -- Summary from Portland Team</title>
+    <link href="http://blog.codersbase.com/posts/2008-10-28-darcs-hacking-sprint.html" />
+    <id>http://blog.codersbase.com/posts/2008-10-28-darcs-hacking-sprint.html</id>
+    <published>2008-10-28T00:00:00Z</published>
+    <updated>2008-10-28T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p><span class="Apple-style-span" style="border-collapse: collapse; font-family: arial, sans-serif; font-size: 13px;"></span> The weekend of 24-25 October 2008 was an <strong>International</strong> darcs hacking sprint! The sprint was a lot of fun and we’ll be having more. The sprint provides a very productive atmosphere for hacking.</p>
+<p>We had a team in Brighton with posts from <a href="http://koweycode.blogspot.com/2008/10/darcs-hacking-sprints-some-pictures.html" style="color: #2244bb;" target="_blank">Day 1</a> and <a href="http://koweycode.blogspot.com/2008/10/darcs-hacking-sprint-team-brighton-day.html" style="color: #2244bb;" target="_blank">Day 2</a>. We also had team in Paris but I don’t have a link for them.</p>
+Here are just some of the highlights from the Portland Team:
+<ul>
+<li>
+Adding language pragmas in all files:
+<ul>
+<li>
+makes the code cleaner when it’s time to drop ghc6.6 support
+</li>
+<li>
+all required language extensions are now known
+</li>
+<li>
+makes it easier to check for Haskell’ compatibility
+</li>
+</ul>
+</li>
+<li>
+Removed OldFastPackedStrings
+</li>
+<li>
+Replaced FastPackedStrings api in favor of Data.ByteString api
+<ul>
+<li>
+lots of small optimizations, less pack/unpack, more standard ByteString code
+</li>
+<li>
+removed a fair bit of C code, new code compiles to same or faster assembly (Don checked)
+</li>
+</ul>
+</li>
+<li>
+cabalization:
+<ul>
+<li>
+no autoconf or make needed
+</li>
+<li>
+cabal install tested and working on linux / osx, windows testing soon to follow
+</li>
+<li>
+builds out of the box w/ 6.8 and 6.10
+</li>
+<li>
+configure is much faster
+</li>
+</ul>
+</li>
+<li>
+<a href="http://galois.com/~dons/images/darcs.svg" style="color: #2244bb;" target="_blank">module graph</a> (depends on cabalization)
+</li>
+<li>
+Duncan improved zlib
+<ul>
+<li>
+soon to be available on hackage
+</li>
+<li>
+allows us to replace our own implementation of zlib bindings with the main stream one
+</li>
+<li>
+will make building on windows easier
+</li>
+<li>
+can use lazy bytestrings
+</li>
+</ul>
+</li>
+</ul>
+<p>Here are some random pictures from the Portland Sprint. Packages we should consider: <img alt="Packages we should consider" src="http://galois.com/~dons/images/darcs-oct-08/Image003.jpg" /> The TODO list we made on the first day: <img alt="The TODO list we made on the first day" src="http://galois.com/~dons/images/darcs-oct-08/Image004.jpg" /> Checking on Team Brighton: <img alt="Checking on Team Brighton" src="http://galois.com/~dons/images/darcs-oct-08/Image006.jpg" /> Duncan and Jason looking at the projector: <img alt="Duncan and Jason looking at the projector" src="http://galois.com/~dons/images/darcs-oct-08/Image007.jpg" /> Ah, beautiful Portland in fall: <img alt="Ah, beautiful Portland in fall" src="http://galois.com/~dons/images/darcs-oct-08/Image002.jpg" /></p>]]></summary>
+</entry>
+<entry>
+    <title>Understanding Darcs Commute</title>
+    <link href="http://blog.codersbase.com/posts/2008-10-24-understanding-darcs-commute.html" />
+    <id>http://blog.codersbase.com/posts/2008-10-24-understanding-darcs-commute.html</id>
+    <published>2008-10-24T00:00:00Z</published>
+    <updated>2008-10-24T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p>People often want to understand how commute on patches works. Usually we start by saying:</p>
+<p>Given two patches, <span class="math">\(A\)</span> and <span class="math">\(B\)</span>, if <span class="math">\(A\)</span> and <span class="math">\(B\)</span> commute then: <span class="math">\(AB \longleftrightarrow B’A’\)</span>, for some <span class="math">\(B’\)</span> and <span class="math">\(A’\)</span>.</p>
+<p>Naturally people ask, “But what is the relationship between <span class="math">\(A\)</span> and <span class="math">\(A’\)</span> or <span class="math">\(B\)</span> and <span class="math">\(B’\)</span>?” This is a very important question and I’ll provide you with some insight.</p>
+<p>Suppose we have a repository with 2 files, <span class="math">\(a\)</span> and <span class="math">\(b\)</span>. We could then make the following operations:</p>
+<pre><code>mv b c
+mv a b
+mv c a</code></pre>
+<p>You can think of each operation as a transformation on the ’state’ of your repository. Suppose also, that we make an edit to <span class="math">\(a\)</span>, and an edit to <span class="math">\(b\)</span>.</p>
+<p>Let’s name the above, using <span class="math">\(T\)</span> for transformation:</p>
+<p><span class="math">\[T_{bc} = \text{mv b c}\]</span> <span class="math">\[T_{ab} = \text{mv a b}\]</span> <span class="math">\[T_{ca} = \text{mv c a}\]</span> <span class="math">\[T_a = \text{edit a}\]</span> <span class="math">\[T_b = \text{edit b}\]</span></p>
+<p>You can imagine that if I gave the diff for <span class="math">\(T_a\)</span> and the diff for <span class="math">\(T_b\)</span> that you could apply those diffs in either order to your repository and get the same final ’state’. Meaning, <span class="math">\(a\)</span> and <span class="math">\(b\)</span> are the same whether you update <span class="math">\(a\)</span> first or <span class="math">\(b\)</span> first.</p>
+<p>But, suppose instead that I performed <span class="math">\(T_{bc}\)</span>, <span class="math">\(T_{ab}\)</span>, and then <span class="math">\(T_{ca}\)</span>. This has the effect of swapping <span class="math">\(a\)</span> and <span class="math">\(b\)</span> by name. Now suppose you applied the diffs <span class="math">\(T_a\)</span> and <span class="math">\(T_b\)</span>. What would you want the outcome to be? It turns out, that it matters which operations were created first. If you created the diffs <span class="math">\(T_a\)</span> and <span class="math">\(T_b\)</span> <em>before</em> you did the operations of the swap, then you should expect that after the swap the diff for <span class="math">\(T_a\)</span> actually modifies <span class="math">\(b\)</span>, whereas <span class="math">\(T_b\)</span> should modify <span class="math">\(a\)</span>. On the other hand, if you created the diffs <span class="math">\(T_a\)</span> and <span class="math">\(T_b\)</span> <em>after</em> the swap, then you expect <span class="math">\(T_a\)</span> to modify <span class="math">\(a\)</span> and <span class="math">\(T_b\)</span> to modify <span class="math">\(b\)</span>.</p>
+<p>We have an intuitive idea of ‘context’ now. As in, what is the context that <span class="math">\(T_a\)</span> and <span class="math">\(T_b\)</span> were created in? Knowing this will tell us how they transform the repository state.</p>
+<p>Intuitively, it seems as though we need to remember the ‘context’ in which <span class="math">\(T_a\)</span> and <span class="math">\(T_b\)</span> were created. So let’s say that the operations performed up to the point where <span class="math">\(T_a\)</span> is created is the context of <span class="math">\(T_a\)</span>. In other words, the context for <span class="math">\(T_a\)</span> is sequence of transformations that existed when <span class="math">\(T_a\)</span> was created. Similarly, since <span class="math">\(T_a\)</span> is a transformation, creating it results in a new context, which is the old context plus <span class="math">\(T_a\)</span>. We could say that <span class="math">\(T_b\)</span> has this context. Going a bit further, it seems like we should talk about how <span class="math">\(T_a\)</span> has a pre-context and it also has a post-context.</p>
+<p>For example, if we created <span class="math">\(T_a\)</span> before doing the swap, then the pre-context might include two transformations, one that creates <span class="math">\(a\)</span> and another one that creates <span class="math">\(b\)</span>. The post-context would then include those two transformations and <span class="math">\(T_a\)</span> itself. If we created <span class="math">\(T_a\)</span> after doing the swap, the pre-context and post-contexts of <span class="math">\(T_a\)</span> would include <span class="math">\(T_{bc}\)</span>, <span class="math">\(T_{ab}\)</span> and <span class="math">\(T_{ca}\)</span> also.</p>
+<p>Now a side note about commutative functions. Consider the function created by composing <span class="math">\(T_a\)</span> and <span class="math">\(T_b\)</span>, let’s write <span class="math">\(T_a \circ T_b\)</span>. Recall, that with function composition parameters start on the right and pass through the sequence to the left. As discussed in the intro, <span class="math">\(T_a \circ T_b\)</span> is equal to <span class="math">\(T_b \circ T_a\)</span>. This is because <span class="math">\(T_a\)</span> and <span class="math">\(T_b\)</span> are independent of each other. Thus, we would say that the functions <span class="math">\(T_a\)</span> and <span class="math">\(T_b\)</span> are commutative functions. This means, that changing their order of application does not change the result.</p>
+<p>We are saying that:</p>
+<p><span class="math">\[T_a \circ T_b = T_b \circ T_a\]</span></p>
+<p>Because <span class="math">\(T_a\)</span> and <span class="math">\(T_b\)</span> are commutative it doesn’t matter which order we compose them. If we restrict our view to just the repository above with only the files <span class="math">\(a\)</span>, <span class="math">\(b\)</span> and no <span class="math">\(c\)</span>, then on this restricted set of repository state how do these two compare?</p>
+<p><span class="math">\[T_b \circ T_a\]</span> <span class="math">\[T_a \circ T_b \circ (T_{ca} \circ T_{ab} \circ T_{bc})\]</span></p>
+<p>In plain English, the first one edits <span class="math">\(a\)</span> and then <span class="math">\(b\)</span>, the second one swaps <span class="math">\(a\)</span> and <span class="math">\(b\)</span>, edits <span class="math">\(b\)</span> and finally edits <span class="math">\(a\)</span>. As far as the mathematics of it is concerned, the first one will edit <span class="math">\(a\)</span> and <span class="math">\(b\)</span>, while the second one will have <span class="math">\(T_a\)</span> editing a different <span class="math">\(a\)</span> than the first one and <span class="math">\(T_b\)</span> editing a different <span class="math">\(b\)</span> than the second one. Going a bit further, let’s say that <span class="math">\(T_a\)</span> and <span class="math">\(T_b\)</span> were created without any of <span class="math">\(T_{bc}\)</span>, <span class="math">\(T_{ab}\)</span> or <span class="math">\(T_{ca}\)</span> in their context. So we could have two scenarios.</p>
+<p>We could, for example, start with <span class="math">\(T_b\)</span> and <span class="math">\(T_a\)</span>, swap their order and then do the swap of <span class="math">\(a\)</span> and <span class="math">\(b\)</span> afterwards. That would give us:</p>
+<p><span class="math">\[ T_b \circ T_a \]</span></p>
+<p>and</p>
+<p><span class="math">\[(T_{ca} \circ T_{ab} \circ T_{bc}) \circ T_a \circ T_b\]</span></p>
+<p>Intuitively, it seems like <span class="math">\(T_a\)</span> and <span class="math">\(T_{bc}\)</span> are commutative functions, eg., <span class="math">\(T_{bc} \circ T_a = T_a . T_{bc}\)</span>. So we could rewrite the second one as this:</p>
+<p><span class="math">\[T_{ca} \circ T_{ab} \circ T_a \circ T_{bc} \circ T_b\]</span></p>
+<p>Now, suppose when we commute the function <span class="math">\(T_a\)</span> with <span class="math">\(T_{ab}\)</span>, that we replace <span class="math">\(T_a\)</span> with <span class="math">\(T_a’\)</span>. <span class="math">\(T_a’\)</span> is like <span class="math">\(T_a\)</span> except that <span class="math">\(T_a’\)</span> makes the edits of <span class="math">\(T_a\)</span> to <span class="math">\(b\)</span> instead of <span class="math">\(a\)</span>. After all, this results in <span class="math">\(T_a’\)</span> editing the correct file after the rename. Similarly, when we commute <span class="math">\(T_b\)</span> with <span class="math">\(T_{bc}\)</span>, <span class="math">\(T_b\)</span> is replaced with <span class="math">\(T_b’\)</span> that edits <span class="math">\(c\)</span> instead of <span class="math">\(b\)</span>. When we commute <span class="math">\(T_b’\)</span> with <span class="math">\(T_{ca}\)</span> we replace <span class="math">\(T_b’\)</span> with <span class="math">\(T_b”\)</span> that edits <span class="math">\(a\)</span> instead of <span class="math">\(c\)</span>.</p>
+<p>So, the above goes through these steps:</p>
+<p><span class="math">\[T_{ca} \circ T_a’ \circ T_{ab} \circ T_{bc} \circ T_b  \text{(commute $T_a$ to the left) }\]</span> <span class="math">\[T_a’ \circ T_{ca} \circ T_{ab} \circ T_{bc} \circ T_b  \text{(commute $T_a’$ to the left)}\]</span> <span class="math">\[T_a’ \circ T_{ca} \circ T_{ab} \circ T_b’ \circ T_{bc} \text{(commute $T_b$ to the left) }\]</span> <span class="math">\[T_a’ \circ T_{ca} \circ T_b’ \circ T_{ab} \circ T_{bc} \text{(commute $T_b’$ to the left)}\]</span> <span class="math">\[T_a’ \circ T_b” \circ T_{ca} \circ T_{ab} \circ T_{bc}\]</span></p>
+<p>The last one will then have <span class="math">\(T_a’\)</span> and <span class="math">\(T_b”\)</span> making edits the same file contents as <span class="math">\(T_a\)</span> and <span class="math">\(T_b\)</span> respectively, even though the names of the files were changed by the swap.</p>
+<p>So, if you’ve followed me to this point, then you now have the intuition for what we mean when two patches <span class="math">\(A\)</span> and <span class="math">\(B\)</span>, commute to <span class="math">\(B’\)</span> and <span class="math">\(A’\)</span>, as <span class="math">\(AB \longleftrightarrow B’A’\)</span>. You can think of a patch as being one of the above transformations along with the context of the transformation. You might also notice that commute of patches must be doing something to the context of the patches.</p>
+<p>Patch commute has the potential to update the context and transformation the patches it swaps OR it could update the context and leave the state transformations equal to what they were in the input. Patch commute can also fail, but we’re ignoring that case for the moment.</p>
+<p>Thinking back to how we arrived at the need for context, you might notice that for each context, that is each sequence of operations, we get one unique repository state. This is a very important property of context. Without it, context wouldn’t really be useful. Also, notice that the opposite is not true, repository state does not determine the context. Which makes sense, because there are lots of operations you can do that get the repository to a particular state, so given a state how do you know what was done?</p>
+<p>The next important property we want for commuting patches is that once two patches have been commuted, you can commute them again to undo the commutation. In fact, it turns out the examples above are saying we want contexts to determine the same state if you commute the patches inside the context (again, context is a sequence of patches!).</p>
+<p>For <span class="math">\(R\)</span> to be an equivalence relation, we need three things:</p>
+<ol style="list-style-type: decimal">
+<li><span class="math">\(x\)</span> <span class="math">\(R\)</span> <span class="math">\(x\)</span>, is true for all <span class="math">\(x\)</span></li>
+<li>if <span class="math">\(x\)</span> <span class="math">\(R\)</span> <span class="math">\(y\)</span> then <span class="math">\(y\)</span> <span class="math">\(R\)</span> <span class="math">\(x\)</span></li>
+<li>if <span class="math">\(x\)</span> <span class="math">\(R\)</span> <span class="math">\(y\)</span> and <span class="math">\(y\)</span> <span class="math">\(R\)</span> <span class="math">\(z\)</span> then <span class="math">\(x\)</span> <span class="math">\(R\)</span> <span class="math">\(z\)</span></li>
+</ol>
+<p>Here, we replace <span class="math">\(x\)</span> <span class="math">\(R\)</span> <span class="math">\(y\)</span> with “the sequencing, or order, of <span class="math">\(x\)</span> can be obtained by commuting adjacent elements of <span class="math">\(y\)</span>”. Roughly how to prove each:</p>
+<p>either claim that 0 commutes satisfies definition of <span class="math">\(R\)</span> or check that commute is self-inverting relies on self-inverting nature, I think messier but should still be provable</p>
+<p>I’m pretty sure both (2) and (3) could be done with a brute force proof that considered all the pairings of patch types in their general cases. Start with all sequences of length 2, then 3 and I think at that point you could make an inductive argument to hit sequences of length <span class="math">\(n\)</span>. This would be a lot of work, and I’m not convinced it could be fully automated.</p>
+<p>Why would we want to show the above? Showing that <span class="math">\(R\)</span> is a relation would tell us that sequences of patches are equivalent under commute. Now, combine this with the idea that context determines the state uniquely and now we know sets of patches uniquely determine your repository.</p>]]></summary>
+</entry>
+<entry>
+    <title>Hamming Was Right</title>
+    <link href="http://blog.codersbase.com/posts/2008-10-24-hamming-was-right.html" />
+    <id>http://blog.codersbase.com/posts/2008-10-24-hamming-was-right.html</id>
+    <published>2008-10-24T00:00:00Z</published>
+    <updated>2008-10-24T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p>I’m clearing out some unfinished posts I have. Here are two points that struck a cord with me from a speech by Richard Hamming.</p>
+<p>From <a href="http://www.cs.virginia.edu/~robins/YouAndYourResearch.html">You and your research.</a></p>
+<p>I think this first bit is good advice for all of us. Instead of summing it up, I’ll just let you read it the way Hamming intended it to be said:</p>
+<blockquote>
+<p>To end this part, I’ll remind you, “It is a poor workman who blames his tools - the good man gets on with the job, given what he’s got, and gets the best answer he can.” And I suggest that by altering the problem, by looking at the thing differently, you can make a great deal of difference in your final productivity because you can either do it in such a fashion that people can indeed build on what you’ve done, or you can do it in such a fashion that the next person has to essentially duplicate again what you’ve done. It isn’t just a matter of the job, it’s the way you write the report, the way you write the paper, the whole attitude. It’s just as easy to do a broad, general job as one very special case. And it’s much more satisfying and rewarding!</p>
+</blockquote>
+<p>This next bit is very personally humbling. I’ve lost track of the number of times in my life when I’ve found myself as the “second-rate fellow” he describes below. For me it often comes up in dealing with things that I label as “political”. I don’t mean Republicans versus Democrats, but by political I mean things which matter but are related to policy not theory or technical details.</p>
+<blockquote>
+<p>Many a second-rate fellow gets caught up in some little twitting of the system, and carries it through to warfare. He expends his energy in a foolish project. Now you are going to tell me that somebody has to change the system. I agree; somebody’s has to. Which do you want to be? The person who changes the system or the person who does first-class science? Which person is it that you want to be? Be clear, when you fight the system and struggle with it, what you are doing, how far to go out of amusement, and how much to waste your effort fighting the system. My advice is to let somebody else do it and you get on with becoming a first-class scientist. Very few of you have the ability to both reform the system and become a first-class scientist.</p>
+</blockquote>
+<p>Hamming is absolutely right. If you want to be good at a particular thing, don’t fight your battles else where. Be balanced, objective and reasonable. Bark less and wag more :)</p>]]></summary>
+</entry>
+<entry>
+    <title>Darcs 2 Real-World Push Performance Evaluation</title>
+    <link href="http://blog.codersbase.com/posts/2008-08-21-darcs2-push-performance.html" />
+    <id>http://blog.codersbase.com/posts/2008-08-21-darcs2-push-performance.html</id>
+    <published>2008-08-21T00:00:00Z</published>
+    <updated>2008-08-21T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p>Thanks to Eric Kow, Duncan Coutts and Ian Lynagh we have some great timing data for using darcs2 and darcs1 to push patches over ssh.</p>
+<p>Eric wrote a script to test three different scenarios of using darcs to push patches:</p>
+<ul>
+<li>Scenario l1r1: This is a local darcs1 client talking to a remote darcs1 executable.</li>
+<li>Scenario l1r2: This is a local darcs1 client talking to a remote darcs2 executable.</li>
+<li>Scenario l2r2: This is a local darcs2 client talking to a remote darcs2 executable.</li>
+</ul>
+<p>Next, Duncan and Ian provided us with access to 131 real-world repositories hosted at <a href="http://code.haskell.org">http://code.haskell.org</a>. We ran the script to push patches to each repository, this gave us a ton of times. Then in Excel we crunched these numbers to see that not only is scenario l2r2 no worse than the other two, it’s actually faster on the time consuming cases!</p>
+<p>The one caveat we found is that the minimum start-up time for the first two scenarios is 1 second and in the last scenario it’s 2 seconds. I’m confident we can shave off this 1 second difference in the future.</p>
+<p><img height="219" src="http://spreadsheets.google.com/pub?key=pCrZlx9LBLA2GSXzICOaULw&amp;oid=2&amp;output=image" width="600" /></p>
+<p>This is a histogram that shows you how the push times distribute, click on it for a large image. Along the bottom we have how many seconds the push took, and along the vertical axis we have the number of data points in that range. At a glance you can see that most repositories take just a few seconds to push. We can also see that darcs2 is slower on small pushes by about one second. Darcs2 in this chart corresponds to l2r2 and darcs1 corresponds to l1r1.</p>
+<p>On a side note, we also tested converting all the repositories to darcs2 repository format and that worked great as well. Converting all the repositories at once takes less than 20 minutes on my laptop without a single error. There were a few warnings, but that’s to be expected as potentially exponential merges are fixed in the new darcs2 format, but darcs emits a warning when fixing them.</p>
+<p>For anyone that wants to see the raw numbers click <a href="http://files.codersbase.com/darcs-times.htm">here.</a> The link does work, but not all web browsers are showing the numbers. Opera and FF3 work on some platforms and not others.</p>]]></summary>
+</entry>
+<entry>
+    <title>Simple Unit Testing in Haskell</title>
+    <link href="http://blog.codersbase.com/posts/2006-09-01-simple-unit-testing.html" />
+    <id>http://blog.codersbase.com/posts/2006-09-01-simple-unit-testing.html</id>
+    <published>2006-09-01T00:00:00Z</published>
+    <updated>2006-09-01T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p><strong>Note: This post is now old and the ideas described here are NOT recommended. There are much better libraries available now for unit testing and QuickChecking. This post exists simply for the sake of documenting how I did it way back when.</strong></p>
+<p>Recently I started using QuickCheck but things were a bit hard to get working so I’ll help write down what I’ve learned now that it’s working nicely. I wanted to store all my tests in one file, say, Tests.hs and only mention them once in the entire code base. So, once a test is defined I want everything else to be automated, I don’t want to have to list it for inclusion in a harness or any of that junk. Prerequisites</p>
+<p>My setup requires Template Haskell (TH) and a Haskell parser which means you’ll need GHC. You’ll need quickcheck and a desire to test :-) I don’t assume any knowledge of TH, quickcheck, cabal or parsing haskell but I don’t really explain them either. If you get lost by my lack of details shoot me an email or post a comment and I’ll be happy to clarify. Setup</p>
+<p>Template Haskell has a restriction on top level splices that says you cannot use a function in a splice if the function was defined in the same module as the splice. I already have a file in my project called “Utility.hs” where I store my general purpose and misc. functions so this is where I place things to be used in top level splices. This will make more sense when we get to mkCheck.</p>
+<p>When you define a test for QuickCheck the name always begins with <code>prop_</code>. Here is an example test:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- from Tests.hs</span>
+prop_lrotate1 xs <span class="fu">=</span> lrotate (<span class="fu">length</span> xs) xs <span class="fu">==</span> xs
+  <span class="kw">where</span> types <span class="fu">=</span><span class="ot"> xs ::</span> [<span class="dt">Int</span>]</code></pre>
+<p>This test says, whenver you rotate a list by its length you better get the original list back (obviously we are assuming a finite list). This test, also known as a property in quickcheck terminology, goes into Tests.hs.</p>
+<p>In Utility.hs I’ve defined some functions to read over Tests.hs and pull out the names of any properties. I decided to use a Haskell98 parser just to be safe, but you could use regular expressions here.</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- From Utility.hs</span>
+<span class="co">{- | looks in Tests.hs for functions like prop_foo and returns</span>
+<span class="co">  the list.  Requires that Tests.hs be valid Haskell98. -}</span>
+<span class="ot">tests ::</span> [<span class="dt">String</span>]
+tests <span class="fu">=</span> unsafePerformIO <span class="fu">$</span>
+  <span class="kw">do</span> h <span class="ot">&lt;-</span> openFile <span class="st">&quot;src/Tests.hs&quot;</span> <span class="dt">ReadMode</span>
+     s <span class="ot">&lt;-</span> hGetContents h
+     <span class="kw">case</span> parseModule s <span class="kw">of</span>
+       (<span class="dt">ParseOk</span> (<span class="dt">HsModule</span> _ _ _ _ ds)) <span class="ot">-&gt;</span> <span class="fu">return</span> (<span class="fu">map</span> declName (<span class="fu">filter</span> isProp ds))
+       (<span class="dt">ParseFailed</span> loc s&#39;)            <span class="ot">-&gt;</span> <span class="fu">error</span> (s&#39; <span class="fu">++</span> <span class="st">&quot; &quot;</span> <span class="fu">++</span> <span class="fu">show</span> loc)
+
+<span class="co">{- | checks if function binding name starts with @prop_@ indicating</span>
+<span class="co"> that it is a quickcheck property -}</span>
+<span class="ot">isProp ::</span> <span class="dt">HsDecl</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
+isProp d<span class="fu">@</span>(<span class="dt">HsFunBind</span> _) <span class="fu">=</span> <span class="st">&quot;prop_&quot;</span> <span class="ot">`isPrefixOf`</span> (declName d)
+isProp _ <span class="fu">=</span> <span class="kw">False</span>
+
+<span class="co">{- | takes an HsDecl and returns the name of the declaration -}</span>
+<span class="ot">declName ::</span> <span class="dt">HsDecl</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
+declName (<span class="dt">HsFunBind</span> (<span class="dt">HsMatch</span> _ (<span class="dt">HsIdent</span> name) _ _ _<span class="fu">:</span>_)) <span class="fu">=</span> name
+declName _                                              <span class="fu">=</span> <span class="fu">undefined</span></code></pre>
+<p>Why do I need the <code>unsafePerformIO</code>? Well, that’s to get around a little problem I was having with top level splices. Perhaps if I were a little bit better with Template Haskell I wouldn’t need it. In this case it’s perfectly fine because we won’t be changing Tests.hs while we’re compiling the testsuite so the list of tests will not change while we’re using this function. Now that we have a list of test names we can build an AST to execute the tests. This is where Template Haskell comes in.</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- From Utility.hs</span>
+mkCheck name <span class="fu">=</span> [<span class="fu">|</span> <span class="fu">putStr</span> (name <span class="fu">++</span> <span class="st">&quot;: &quot;</span>)
+               <span class="fu">&gt;&gt;</span> quickCheck <span class="fu">$</span>(varE (mkName name)) <span class="fu">|</span>]
+
+mkChecks []        <span class="fu">=</span> <span class="fu">undefined</span> <span class="co">-- if we don&#39;t have any tests, then the test suite is undefined right?</span>
+mkChecks [name]    <span class="fu">=</span> mkCheck name
+mkChecks (name<span class="fu">:</span>ns) <span class="fu">=</span> [<span class="fu">|</span> <span class="fu">$</span>(mkCheck name) <span class="fu">&gt;&gt;</span> <span class="fu">$</span>(mkChecks ns) <span class="fu">|</span>]</code></pre>
+<p>You can get fancier if you like, but I simply output the name of the test right before the status. That way when a test fails it’s easy to see which one.</p>
+<p>Next we create a very simple module, Unit.hs, to run the tests for us.</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">{-# OPTIONS_GHC -fno-warn-unused-imports -no-recomp -fth #-}</span>
+<span class="kw">module</span> <span class="dt">Unit</span> <span class="kw">where</span>
+
+<span class="kw">import</span> Utility -- our TH functions
+<span class="kw">import</span> Tests -- our test cases
+
+<span class="ot">runTests ::</span> <span class="dt">IO</span> ()
+runTests <span class="fu">=</span> <span class="fu">$</span>(mkChecks tests)</code></pre>
+<p>The GHC options will take a bit of explaining. I’ll get back to why <code>-no-recomp</code> is there when I talk about cabal. The <code>-fth</code> is for template haskell, you’ll need that in Utility.hs also. If you compile with <code>-Wall -Werror</code> then <code>-fno-warn-unused-imports</code> keeps GHC from complaining about importing Tests. You need the import because we splice the test cases in but the unused imports check doesn’t know about what we’re doing with TH.</p>
+<p>Alright, at this point all you need to do build and run your tests is:</p>
+<pre><code>ghc --make Unit.hs -main-is Unit.runTests -o unit</code></pre>
+<p>Followed by</p>
+<pre><code>unit</code></pre>
+<p>(or use unit.exe if you’re on windows)</p>
+<h2 id="cabal">Cabal</h2>
+<p>I went a step further and made things work with Cabal. To do this, go into Setup.hs and make these changes:</p>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import</span> Distribution.Simple
+<span class="kw">import</span> System.Cmd
+<span class="kw">import</span> System.Exit
+
+main <span class="fu">=</span> defaultMainWithHooks (defaultUserHooks { runTests <span class="fu">=</span> quickCheck } )
+  <span class="kw">where</span>
+  quickCheck _ _ _ _ <span class="fu">=</span> <span class="kw">do</span> ec <span class="ot">&lt;-</span> system <span class="fu">$</span> <span class="st">&quot;ghc --make -odir dist/build -hidir dist/build -idist/build:src src/Unit.hs -main-is Unit.runTests -o unit&quot;</span>
+                          <span class="kw">case</span> ec <span class="kw">of</span>
+                            <span class="dt">ExitSuccess</span> <span class="ot">-&gt;</span> <span class="dt">System</span> <span class="st">&quot;unit&quot;</span>
+                            _           <span class="ot">-&gt;</span> <span class="fu">return</span> ec</code></pre>
+<p>Here I’m assuming you keep your source code in the “src” directory relative to the .cabal file. Now after you build, you should be able to test with, <code>runghc Setup.hs test</code>. I mentioned I’d talk more about that <code>-no-recomp</code> option in Unit.hs. I noticed that whever I compiled my program then compiled Unit.hs everything went smoothly but when I compiled Unit.hs in the normal flow of compiling my program that I would get errors about undefined symbols when I typed <code>runghc Setup.hs test</code>. To force ghc to always rebuild Unit.hs you just need to add <code>-no-recomp</code>. Another option would be system <code>touch src/Unit.hs</code> right before the ghc line in quickCheck above.</p>
+<p>Note: The setup described here matches mine as close as possible without some extra details specific to my project (I have a rule in my cabal file for building a dll. I didn’t show it here, but I’d be happy to send it to you if you need such a thing :). So it’s possible I’ve left out something simple like an import somewhere. So if you try these steps and get stuck let me know.</p>]]></summary>
+</entry>
+<entry>
+    <title>Learn Math (10 tips)</title>
+    <link href="http://blog.codersbase.com/posts/2006-08-17-learn-math-tips.html" />
+    <id>http://blog.codersbase.com/posts/2006-08-17-learn-math-tips.html</id>
+    <published>2006-08-17T00:00:00Z</published>
+    <updated>2006-08-17T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p>One of the most common things I hear from my programming buddies is, “I wish I knew more math.” I think I tend to hear this from my friends because when I was an undergrad earning my BS in CS I took my time to also pick up a BS in math. Most of my friends know this and so they tend to ask me questions about math and learning it.</p>
+<p>Well guess what? Even with a four year degree in math, I feel the same way. Oh, perhaps I’d say it differently, “I wish I could remember and pickup more math” but it’s the exact same feeling. As programmers, math is very important and we know that even when we’re just writing SQL statements or producing XML transformations.</p>
+<p>So how do we learn more of this math? Well, it’s going to take time and commitment and I admit I don’t have it all figured out, yet, but I’ve been spending some brain time on it trying to figure ways to get there.</p>
+<p>There are several important ingredients you’ll need, but before I dive into that let me explain some of the ways my learning style changed as I studied math in my undergrad. I consider these changes you might try to bring about in yourself so that you’ll pick up the math more easily.</p>
+<ol style="list-style-type: decimal">
+<li><p>Learn to learn. Simply put, reading it and thinking about it are not enough. As an aside, if learning the math doesn’t feel difficult, you’re probably not actually learning it. To really learn something and expand your mind is hard work and you’ll get tired, frustrated and discouraged. Just remember, your mind is similar to a muscle. You have to exercise it and let it rest and recover. Exercise is hard work, but the benefits are worth it.</p></li>
+<li><p>Definitions are probably the most important thing you’ll ever learn in math. See point 1 for my definition of “learn”. When you really get the definition of something, many theorems just make sense and after you get point 4, proving them is just a matter of explaining to someone why the theorem makes sense to you. Of course not all theorems are this way, and you should definitely try to capture any clever reasoning behind named proofs. These patterns of reasoning will resurface in your later proofs.</p></li>
+<li><p>Write it all out, everytime. Primarily I mean definitions and statements of theorems. Also, think about it while you write it. Stop and pause, think about where you could take short cuts in phrasing the definition of something. Does that change the meaning? Why do you suppose the definition bothers to include unique identity instead of just identity? Are there theorems you’ve learned about this object that would fail to hold?</p></li>
+<li><p>Work the exercises, and write out all the details of the proof, even if the proof is given in the book and you think the omited details are “obvious”. Learning to phrase the “obvious” mathematically is immensly important. Additionally, you may discover something by exploring the “obvious”. Entire branches of mathematics have been discovered by people exploring the “obvious”. See the history of non-Euclidean geometry for background (some info here: http://universe.sonoma.edu/activities/geometry.html).</p></li>
+<li><p>Infinity, sequences and real numbers (aka real analysis), induction, and group theory. When you learn each of these concepts your understanding of programming will actually improve. You’ll see things in new ways. Even things in nature. There’s probably a million other things that you can learn to expand your mind in the same way, but I learned the above list in that order and it changed me and my way of seeing the world. I’m confident it will do the same for you because I witnessed similar changes in friends that I studied with.</p>
+<p>Now, on to the things you’ll need to in order to be more successfull in your studies.</p></li>
+<li><p>You need good text books. Text books are not created equally. What makes a text book good is hard to define. Basically, the definitions need to be good and progress nicely. The book needs to start where you are and lead you where you want to go. Some of the theorem and exercises should contain typos and incorrect solutions. This is highly counter intuitive but very important if you want to learn the subject.</p>
+<p>Since you’re trying to learn the material, not just absorb it, you’re going to be hand checking the theorem proofs and working the exercises until the logic makes sense. Here is one possible outcome I’ve experienced several times with flawed exercises: When you come to one that has a flaw you might at first go with it. Then you might work it a bit more and realize you’re not getting it. This stuff is confusing. But then you think, “wait, I made it this far, why is this stuff confusing?” Back to the definition you go. Do you really get the definition? Yeah, I guess so but if that’s the case, then this is really a bad way to put it. Oh wait, it’s not just a bad way, but it should be this way. Oh! I get it, and that theorem over there seems so trivial now… Another possibility is that you think you have found a typo, but even after “fixing” it, it’s still not quite right. In this case, often you’re wrong and you have to figure it out! Doesn’t this sound familiar? It’s like this, you read it, interpreted it, wrote it down and now it doesn’t work like you wanted and you have to spot the problem and figure out the solution. Oh, I just described debugging something you programmed. Learning math can actually improve your programming without teaching you anything specific to the code you’re working on. One last comment on the text book. I don’t know how to get good text book recommendations. Perhaps amazon reviews are okay, but I want to trust the reviewers and know that they will recognize a good text book before I trust them here. Perhaps it would work to find a quality researcher and look at their books.</p></li>
+<li><p>People to talk to. You need friends that you can talk to about the ideas you’re learning. Now that I don’t have classrooms full of other math undergrads to talk with I don’t know what to do about this aspect. Perhaps I need to go back to school or maybe I can find forums online. I should look into this and let you know what I learn.</p></li>
+<li><p>Subjects that you care about. Ever dreamed of cracking some crypto system? Ever wondered why a Turing machine is capable of computation? What is type inference? How does the four color theorem work? I’m sure you’ve wondered one of these or similar questions. But perhaps you don’t care at all about Fermat’s last theorem. So just to state the obvious, remember to pick something that has a pay off for you emotionally. It fills a curiousity or dream. You’ll need this as motivation when the learning gets hard.</p></li>
+<li><p>Learn time budgeting. The best time budgeting technique I have picked up is this: Take a calendar that gives your week in tabular form. Each day is a column and the days are split into rows about 30 minutes per row. Whenever you have something that you’d normally stick on your TODO list, block out a chunk of time on your calendar. Let’s say you need to go to work, wash the dishes, cook dinner, take out the trash and study your math. Well, you start by blocking out the time for work, then fill in 30 min for chores and an hour to cook and eat dinner. Suddenly you see that you really can’t afford to spend 2 hours with your math book tonight. Maybe you block in 30 min with your book. Even though you want to get through chapter 3 before you crack open your other book you won’t be able to do it this week. But that’s okay, because you’ll be making lots of these appointments with your book and eventually you’ll get through it.</p>
+<p>Now if you do this for each day of your week and try to live out the schedule exactly as it’s written you’ll start to feel like a robot and there is a solution to that feeling. I’ll explain with an example. On Tuesday you’re supposed to be cleaning the bath tub at 6pm but you really want to watch a movie (scheduled for Wednesday). So here is the rule: You can change activities on your calendar as long as you follow some law of conservation. In this case, you could swap the days of the activities. Just live up to it. There’s no point in bothering with this sort of time budgeting if you can’t keep the promises you make with your calendar. In fact, you probably won’t get much done of what you mean to.</p></li>
+<li><p>Change your life gradually. The most lasting ways of changing your life generally happen gradually — not over night. So work up from one math text a year to one every 3 months. Start at something reasonable and increase the load as your interest increases. Sink or swim works for some things, but I find it unlikely that it will work here.</p></li>
+</ol>]]></summary>
+</entry>
+
+</feed>

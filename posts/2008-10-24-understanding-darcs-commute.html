@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html class="light cyan" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Understanding Darcs Commute</title>
+        <link rel="stylesheet" type="text/css" href="../css/solarized.css" />
+        <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+        <link rel="stylesheet" type="text/css" href="../css/default.css" />
+        <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-16820193-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+    </head>
+    <body>
+        <div id="header">
+            <div id="logo">
+                <a href="../">dagit.o</a>
+            </div>
+            <div id="navigation">
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../posts.html">Posts</a>
+            </div>
+        </div>
+
+        <div id="content">
+            <h1>Understanding Darcs Commute</h1>
+
+            
+<div class="info">Posted on October 24, 2008, in <a href="../tags/darcs.html">darcs</a>, <a href="../tags/commute.html">commute</a>, <a href="../tags/imported.html">imported</a></div>
+
+<p>People often want to understand how commute on patches works. Usually we start by saying:</p>
+<p>Given two patches, <span class="math">\(A\)</span> and <span class="math">\(B\)</span>, if <span class="math">\(A\)</span> and <span class="math">\(B\)</span> commute then: <span class="math">\(AB \longleftrightarrow B’A’\)</span>, for some <span class="math">\(B’\)</span> and <span class="math">\(A’\)</span>.</p>
+<p>Naturally people ask, “But what is the relationship between <span class="math">\(A\)</span> and <span class="math">\(A’\)</span> or <span class="math">\(B\)</span> and <span class="math">\(B’\)</span>?” This is a very important question and I’ll provide you with some insight.</p>
+<p>Suppose we have a repository with 2 files, <span class="math">\(a\)</span> and <span class="math">\(b\)</span>. We could then make the following operations:</p>
+<pre><code>mv b c
+mv a b
+mv c a</code></pre>
+<p>You can think of each operation as a transformation on the ’state’ of your repository. Suppose also, that we make an edit to <span class="math">\(a\)</span>, and an edit to <span class="math">\(b\)</span>.</p>
+<p>Let’s name the above, using <span class="math">\(T\)</span> for transformation:</p>
+<p><span class="math">\[T_{bc} = \text{mv b c}\]</span> <span class="math">\[T_{ab} = \text{mv a b}\]</span> <span class="math">\[T_{ca} = \text{mv c a}\]</span> <span class="math">\[T_a = \text{edit a}\]</span> <span class="math">\[T_b = \text{edit b}\]</span></p>
+<p>You can imagine that if I gave the diff for <span class="math">\(T_a\)</span> and the diff for <span class="math">\(T_b\)</span> that you could apply those diffs in either order to your repository and get the same final ’state’. Meaning, <span class="math">\(a\)</span> and <span class="math">\(b\)</span> are the same whether you update <span class="math">\(a\)</span> first or <span class="math">\(b\)</span> first.</p>
+<p>But, suppose instead that I performed <span class="math">\(T_{bc}\)</span>, <span class="math">\(T_{ab}\)</span>, and then <span class="math">\(T_{ca}\)</span>. This has the effect of swapping <span class="math">\(a\)</span> and <span class="math">\(b\)</span> by name. Now suppose you applied the diffs <span class="math">\(T_a\)</span> and <span class="math">\(T_b\)</span>. What would you want the outcome to be? It turns out, that it matters which operations were created first. If you created the diffs <span class="math">\(T_a\)</span> and <span class="math">\(T_b\)</span> <em>before</em> you did the operations of the swap, then you should expect that after the swap the diff for <span class="math">\(T_a\)</span> actually modifies <span class="math">\(b\)</span>, whereas <span class="math">\(T_b\)</span> should modify <span class="math">\(a\)</span>. On the other hand, if you created the diffs <span class="math">\(T_a\)</span> and <span class="math">\(T_b\)</span> <em>after</em> the swap, then you expect <span class="math">\(T_a\)</span> to modify <span class="math">\(a\)</span> and <span class="math">\(T_b\)</span> to modify <span class="math">\(b\)</span>.</p>
+<p>We have an intuitive idea of ‘context’ now. As in, what is the context that <span class="math">\(T_a\)</span> and <span class="math">\(T_b\)</span> were created in? Knowing this will tell us how they transform the repository state.</p>
+<p>Intuitively, it seems as though we need to remember the ‘context’ in which <span class="math">\(T_a\)</span> and <span class="math">\(T_b\)</span> were created. So let’s say that the operations performed up to the point where <span class="math">\(T_a\)</span> is created is the context of <span class="math">\(T_a\)</span>. In other words, the context for <span class="math">\(T_a\)</span> is sequence of transformations that existed when <span class="math">\(T_a\)</span> was created. Similarly, since <span class="math">\(T_a\)</span> is a transformation, creating it results in a new context, which is the old context plus <span class="math">\(T_a\)</span>. We could say that <span class="math">\(T_b\)</span> has this context. Going a bit further, it seems like we should talk about how <span class="math">\(T_a\)</span> has a pre-context and it also has a post-context.</p>
+<p>For example, if we created <span class="math">\(T_a\)</span> before doing the swap, then the pre-context might include two transformations, one that creates <span class="math">\(a\)</span> and another one that creates <span class="math">\(b\)</span>. The post-context would then include those two transformations and <span class="math">\(T_a\)</span> itself. If we created <span class="math">\(T_a\)</span> after doing the swap, the pre-context and post-contexts of <span class="math">\(T_a\)</span> would include <span class="math">\(T_{bc}\)</span>, <span class="math">\(T_{ab}\)</span> and <span class="math">\(T_{ca}\)</span> also.</p>
+<p>Now a side note about commutative functions. Consider the function created by composing <span class="math">\(T_a\)</span> and <span class="math">\(T_b\)</span>, let’s write <span class="math">\(T_a \circ T_b\)</span>. Recall, that with function composition parameters start on the right and pass through the sequence to the left. As discussed in the intro, <span class="math">\(T_a \circ T_b\)</span> is equal to <span class="math">\(T_b \circ T_a\)</span>. This is because <span class="math">\(T_a\)</span> and <span class="math">\(T_b\)</span> are independent of each other. Thus, we would say that the functions <span class="math">\(T_a\)</span> and <span class="math">\(T_b\)</span> are commutative functions. This means, that changing their order of application does not change the result.</p>
+<p>We are saying that:</p>
+<p><span class="math">\[T_a \circ T_b = T_b \circ T_a\]</span></p>
+<p>Because <span class="math">\(T_a\)</span> and <span class="math">\(T_b\)</span> are commutative it doesn’t matter which order we compose them. If we restrict our view to just the repository above with only the files <span class="math">\(a\)</span>, <span class="math">\(b\)</span> and no <span class="math">\(c\)</span>, then on this restricted set of repository state how do these two compare?</p>
+<p><span class="math">\[T_b \circ T_a\]</span> <span class="math">\[T_a \circ T_b \circ (T_{ca} \circ T_{ab} \circ T_{bc})\]</span></p>
+<p>In plain English, the first one edits <span class="math">\(a\)</span> and then <span class="math">\(b\)</span>, the second one swaps <span class="math">\(a\)</span> and <span class="math">\(b\)</span>, edits <span class="math">\(b\)</span> and finally edits <span class="math">\(a\)</span>. As far as the mathematics of it is concerned, the first one will edit <span class="math">\(a\)</span> and <span class="math">\(b\)</span>, while the second one will have <span class="math">\(T_a\)</span> editing a different <span class="math">\(a\)</span> than the first one and <span class="math">\(T_b\)</span> editing a different <span class="math">\(b\)</span> than the second one. Going a bit further, let’s say that <span class="math">\(T_a\)</span> and <span class="math">\(T_b\)</span> were created without any of <span class="math">\(T_{bc}\)</span>, <span class="math">\(T_{ab}\)</span> or <span class="math">\(T_{ca}\)</span> in their context. So we could have two scenarios.</p>
+<p>We could, for example, start with <span class="math">\(T_b\)</span> and <span class="math">\(T_a\)</span>, swap their order and then do the swap of <span class="math">\(a\)</span> and <span class="math">\(b\)</span> afterwards. That would give us:</p>
+<p><span class="math">\[ T_b \circ T_a \]</span></p>
+<p>and</p>
+<p><span class="math">\[(T_{ca} \circ T_{ab} \circ T_{bc}) \circ T_a \circ T_b\]</span></p>
+<p>Intuitively, it seems like <span class="math">\(T_a\)</span> and <span class="math">\(T_{bc}\)</span> are commutative functions, eg., <span class="math">\(T_{bc} \circ T_a = T_a . T_{bc}\)</span>. So we could rewrite the second one as this:</p>
+<p><span class="math">\[T_{ca} \circ T_{ab} \circ T_a \circ T_{bc} \circ T_b\]</span></p>
+<p>Now, suppose when we commute the function <span class="math">\(T_a\)</span> with <span class="math">\(T_{ab}\)</span>, that we replace <span class="math">\(T_a\)</span> with <span class="math">\(T_a’\)</span>. <span class="math">\(T_a’\)</span> is like <span class="math">\(T_a\)</span> except that <span class="math">\(T_a’\)</span> makes the edits of <span class="math">\(T_a\)</span> to <span class="math">\(b\)</span> instead of <span class="math">\(a\)</span>. After all, this results in <span class="math">\(T_a’\)</span> editing the correct file after the rename. Similarly, when we commute <span class="math">\(T_b\)</span> with <span class="math">\(T_{bc}\)</span>, <span class="math">\(T_b\)</span> is replaced with <span class="math">\(T_b’\)</span> that edits <span class="math">\(c\)</span> instead of <span class="math">\(b\)</span>. When we commute <span class="math">\(T_b’\)</span> with <span class="math">\(T_{ca}\)</span> we replace <span class="math">\(T_b’\)</span> with <span class="math">\(T_b”\)</span> that edits <span class="math">\(a\)</span> instead of <span class="math">\(c\)</span>.</p>
+<p>So, the above goes through these steps:</p>
+<p><span class="math">\[T_{ca} \circ T_a’ \circ T_{ab} \circ T_{bc} \circ T_b  \text{(commute $T_a$ to the left) }\]</span> <span class="math">\[T_a’ \circ T_{ca} \circ T_{ab} \circ T_{bc} \circ T_b  \text{(commute $T_a’$ to the left)}\]</span> <span class="math">\[T_a’ \circ T_{ca} \circ T_{ab} \circ T_b’ \circ T_{bc} \text{(commute $T_b$ to the left) }\]</span> <span class="math">\[T_a’ \circ T_{ca} \circ T_b’ \circ T_{ab} \circ T_{bc} \text{(commute $T_b’$ to the left)}\]</span> <span class="math">\[T_a’ \circ T_b” \circ T_{ca} \circ T_{ab} \circ T_{bc}\]</span></p>
+<p>The last one will then have <span class="math">\(T_a’\)</span> and <span class="math">\(T_b”\)</span> making edits the same file contents as <span class="math">\(T_a\)</span> and <span class="math">\(T_b\)</span> respectively, even though the names of the files were changed by the swap.</p>
+<p>So, if you’ve followed me to this point, then you now have the intuition for what we mean when two patches <span class="math">\(A\)</span> and <span class="math">\(B\)</span>, commute to <span class="math">\(B’\)</span> and <span class="math">\(A’\)</span>, as <span class="math">\(AB \longleftrightarrow B’A’\)</span>. You can think of a patch as being one of the above transformations along with the context of the transformation. You might also notice that commute of patches must be doing something to the context of the patches.</p>
+<p>Patch commute has the potential to update the context and transformation the patches it swaps OR it could update the context and leave the state transformations equal to what they were in the input. Patch commute can also fail, but we’re ignoring that case for the moment.</p>
+<p>Thinking back to how we arrived at the need for context, you might notice that for each context, that is each sequence of operations, we get one unique repository state. This is a very important property of context. Without it, context wouldn’t really be useful. Also, notice that the opposite is not true, repository state does not determine the context. Which makes sense, because there are lots of operations you can do that get the repository to a particular state, so given a state how do you know what was done?</p>
+<p>The next important property we want for commuting patches is that once two patches have been commuted, you can commute them again to undo the commutation. In fact, it turns out the examples above are saying we want contexts to determine the same state if you commute the patches inside the context (again, context is a sequence of patches!).</p>
+<p>For <span class="math">\(R\)</span> to be an equivalence relation, we need three things:</p>
+<ol style="list-style-type: decimal">
+<li><span class="math">\(x\)</span> <span class="math">\(R\)</span> <span class="math">\(x\)</span>, is true for all <span class="math">\(x\)</span></li>
+<li>if <span class="math">\(x\)</span> <span class="math">\(R\)</span> <span class="math">\(y\)</span> then <span class="math">\(y\)</span> <span class="math">\(R\)</span> <span class="math">\(x\)</span></li>
+<li>if <span class="math">\(x\)</span> <span class="math">\(R\)</span> <span class="math">\(y\)</span> and <span class="math">\(y\)</span> <span class="math">\(R\)</span> <span class="math">\(z\)</span> then <span class="math">\(x\)</span> <span class="math">\(R\)</span> <span class="math">\(z\)</span></li>
+</ol>
+<p>Here, we replace <span class="math">\(x\)</span> <span class="math">\(R\)</span> <span class="math">\(y\)</span> with “the sequencing, or order, of <span class="math">\(x\)</span> can be obtained by commuting adjacent elements of <span class="math">\(y\)</span>”. Roughly how to prove each:</p>
+<p>either claim that 0 commutes satisfies definition of <span class="math">\(R\)</span> or check that commute is self-inverting relies on self-inverting nature, I think messier but should still be provable</p>
+<p>I’m pretty sure both (2) and (3) could be done with a brute force proof that considered all the pairings of patch types in their general cases. Start with all sequences of length 2, then 3 and I think at that point you could make an inductive argument to hit sequences of length <span class="math">\(n\)</span>. This would be a lot of work, and I’m not convinced it could be fully automated.</p>
+<p>Why would we want to show the above? Showing that <span class="math">\(R\)</span> is a relation would tell us that sequences of patches are equivalent under commute. Now, combine this with the idea that context determines the state uniquely and now we know sets of patches uniquely determine your repository.</p>
+
+<section>
+ <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'dagit'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+        </div>
+        <div id="footer">
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html class="light cyan" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Darcs Hacking Sprint -- Summary from Portland Team</title>
+        <link rel="stylesheet" type="text/css" href="../css/solarized.css" />
+        <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+        <link rel="stylesheet" type="text/css" href="../css/default.css" />
+        <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-16820193-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+    </head>
+    <body>
+        <div id="header">
+            <div id="logo">
+                <a href="../">dagit.o</a>
+            </div>
+            <div id="navigation">
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../posts.html">Posts</a>
+            </div>
+        </div>
+
+        <div id="content">
+            <h1>Darcs Hacking Sprint -- Summary from Portland Team</h1>
+
+            
+<div class="info">Posted on October 28, 2008, in <a href="../tags/darcs.html">darcs</a>, <a href="../tags/hackingsprint.html">hackingsprint</a>, <a href="../tags/haskell.html">haskell</a>, <a href="../tags/imported.html">imported</a>, <a href="../tags/pdx.html">pdx</a></div>
+
+<p><span class="Apple-style-span" style="border-collapse: collapse; font-family: arial, sans-serif; font-size: 13px;"></span> The weekend of 24-25 October 2008 was an <strong>International</strong> darcs hacking sprint! The sprint was a lot of fun and we’ll be having more. The sprint provides a very productive atmosphere for hacking.</p>
+<p>We had a team in Brighton with posts from <a href="http://koweycode.blogspot.com/2008/10/darcs-hacking-sprints-some-pictures.html" style="color: #2244bb;" target="_blank">Day 1</a> and <a href="http://koweycode.blogspot.com/2008/10/darcs-hacking-sprint-team-brighton-day.html" style="color: #2244bb;" target="_blank">Day 2</a>. We also had team in Paris but I don’t have a link for them.</p>
+Here are just some of the highlights from the Portland Team:
+<ul>
+<li>
+Adding language pragmas in all files:
+<ul>
+<li>
+makes the code cleaner when it’s time to drop ghc6.6 support
+</li>
+<li>
+all required language extensions are now known
+</li>
+<li>
+makes it easier to check for Haskell’ compatibility
+</li>
+</ul>
+</li>
+<li>
+Removed OldFastPackedStrings
+</li>
+<li>
+Replaced FastPackedStrings api in favor of Data.ByteString api
+<ul>
+<li>
+lots of small optimizations, less pack/unpack, more standard ByteString code
+</li>
+<li>
+removed a fair bit of C code, new code compiles to same or faster assembly (Don checked)
+</li>
+</ul>
+</li>
+<li>
+cabalization:
+<ul>
+<li>
+no autoconf or make needed
+</li>
+<li>
+cabal install tested and working on linux / osx, windows testing soon to follow
+</li>
+<li>
+builds out of the box w/ 6.8 and 6.10
+</li>
+<li>
+configure is much faster
+</li>
+</ul>
+</li>
+<li>
+<a href="http://galois.com/~dons/images/darcs.svg" style="color: #2244bb;" target="_blank">module graph</a> (depends on cabalization)
+</li>
+<li>
+Duncan improved zlib
+<ul>
+<li>
+soon to be available on hackage
+</li>
+<li>
+allows us to replace our own implementation of zlib bindings with the main stream one
+</li>
+<li>
+will make building on windows easier
+</li>
+<li>
+can use lazy bytestrings
+</li>
+</ul>
+</li>
+</ul>
+<p>Here are some random pictures from the Portland Sprint. Packages we should consider: <img alt="Packages we should consider" src="http://galois.com/~dons/images/darcs-oct-08/Image003.jpg" /> The TODO list we made on the first day: <img alt="The TODO list we made on the first day" src="http://galois.com/~dons/images/darcs-oct-08/Image004.jpg" /> Checking on Team Brighton: <img alt="Checking on Team Brighton" src="http://galois.com/~dons/images/darcs-oct-08/Image006.jpg" /> Duncan and Jason looking at the projector: <img alt="Duncan and Jason looking at the projector" src="http://galois.com/~dons/images/darcs-oct-08/Image007.jpg" /> Ah, beautiful Portland in fall: <img alt="Ah, beautiful Portland in fall" src="http://galois.com/~dons/images/darcs-oct-08/Image002.jpg" /></p>
+
+<section>
+ <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'dagit'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+        </div>
+        <div id="footer">
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </div>
+    </body>
+</html>

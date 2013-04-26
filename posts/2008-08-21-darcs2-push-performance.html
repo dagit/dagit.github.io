@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html class="light cyan" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Darcs 2 Real-World Push Performance Evaluation</title>
+        <link rel="stylesheet" type="text/css" href="../css/solarized.css" />
+        <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+        <link rel="stylesheet" type="text/css" href="../css/default.css" />
+        <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-16820193-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+    </head>
+    <body>
+        <div id="header">
+            <div id="logo">
+                <a href="../">dagit.o</a>
+            </div>
+            <div id="navigation">
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../posts.html">Posts</a>
+            </div>
+        </div>
+
+        <div id="content">
+            <h1>Darcs 2 Real-World Push Performance Evaluation</h1>
+
+            
+<div class="info">Posted on August 21, 2008, in <a href="../tags/darcs.html">darcs</a>, <a href="../tags/performance.html">performance</a>, <a href="../tags/imported.html">imported</a></div>
+
+<p>Thanks to Eric Kow, Duncan Coutts and Ian Lynagh we have some great timing data for using darcs2 and darcs1 to push patches over ssh.</p>
+<p>Eric wrote a script to test three different scenarios of using darcs to push patches:</p>
+<ul>
+<li>Scenario l1r1: This is a local darcs1 client talking to a remote darcs1 executable.</li>
+<li>Scenario l1r2: This is a local darcs1 client talking to a remote darcs2 executable.</li>
+<li>Scenario l2r2: This is a local darcs2 client talking to a remote darcs2 executable.</li>
+</ul>
+<p>Next, Duncan and Ian provided us with access to 131 real-world repositories hosted at <a href="http://code.haskell.org">http://code.haskell.org</a>. We ran the script to push patches to each repository, this gave us a ton of times. Then in Excel we crunched these numbers to see that not only is scenario l2r2 no worse than the other two, it’s actually faster on the time consuming cases!</p>
+<p>The one caveat we found is that the minimum start-up time for the first two scenarios is 1 second and in the last scenario it’s 2 seconds. I’m confident we can shave off this 1 second difference in the future.</p>
+<p><img height="219" src="http://spreadsheets.google.com/pub?key=pCrZlx9LBLA2GSXzICOaULw&amp;oid=2&amp;output=image" width="600" /></p>
+<p>This is a histogram that shows you how the push times distribute, click on it for a large image. Along the bottom we have how many seconds the push took, and along the vertical axis we have the number of data points in that range. At a glance you can see that most repositories take just a few seconds to push. We can also see that darcs2 is slower on small pushes by about one second. Darcs2 in this chart corresponds to l2r2 and darcs1 corresponds to l1r1.</p>
+<p>On a side note, we also tested converting all the repositories to darcs2 repository format and that worked great as well. Converting all the repositories at once takes less than 20 minutes on my laptop without a single error. There were a few warnings, but that’s to be expected as potentially exponential merges are fixed in the new darcs2 format, but darcs emits a warning when fixing them.</p>
+<p>For anyone that wants to see the raw numbers click <a href="http://files.codersbase.com/darcs-times.htm">here.</a> The link does work, but not all web browsers are showing the numbers. Opera and FF3 work on some platforms and not others.</p>
+
+<section>
+ <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'dagit'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+        </div>
+        <div id="footer">
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </div>
+    </body>
+</html>

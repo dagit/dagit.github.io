@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html class="light cyan" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Takusen Tutorial, Part 1: Hello, Takusen</title>
+        <link rel="stylesheet" type="text/css" href="../css/solarized.css" />
+        <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+        <link rel="stylesheet" type="text/css" href="../css/default.css" />
+        <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-16820193-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+    </head>
+    <body>
+        <div id="header">
+            <div id="logo">
+                <a href="../">dagit.o</a>
+            </div>
+            <div id="navigation">
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../posts.html">Posts</a>
+            </div>
+        </div>
+
+        <div id="content">
+            <h1>Takusen Tutorial, Part 1: Hello, Takusen</h1>
+
+            
+<div class="info">Posted on August  1, 2010, in <a href="../tags/database.html">database</a>, <a href="../tags/haskell.html">haskell</a>, <a href="../tags/takusen.html">takusen</a>, <a href="../tags/tutorial.html">tutorial</a>, <a href="../tags/imported.html">imported</a></div>
+
+With the recent release of <a href="http://www.haskell.org/pipermail/haskell-cafe/2010-July/081224.html">Takusen 0.8.6</a>, several people asked for a tutorial.  Hopefully I can help people get up to speed.
+<div>
+
+</div>
+<div>
+If you haven’t heard, Takusen is an industrial strength database library written in Haskell.  Some of the reasons I like Takusen over its competitors:
+</div>
+<div>
+<ul>
+<li>
+Good performance
+</li>
+<li>
+Supports the iteratee style so that you can stream your results from the database
+</li>
+<li>
+BSD license
+</li>
+<li>
+It has a test suite
+</li>
+</ul>
+</div>
+<div>
+The BSD license is nice because it means we can use it at Galois, and we do.  A project I worked on recently used Takusen to communicate with the database.  I found Takusen easy to debug with and it worked quite well.
+</div>
+<div>
+
+</div>
+<div>
+If you like to start by reading lots of background information you might like to read these articles, but I will not assume you have read them in this tutorial:
+</div>
+<div>
+<ul>
+<li>
+<a href="http://okmij.org/ftp/Streams.html">http://okmij.org/ftp/Streams.html</a>
+</li>
+<li>
+<a href="http://okmij.org/ftp/Haskell/regions.html">http://okmij.org/ftp/Haskell/regions.html</a>
+</li>
+</ul>
+</div>
+<div>
+In this tutorial you will learn:
+</div>
+<div>
+<ol>
+<li>
+How to install Takusen with the right backend(s) for your database.
+</li>
+<li>
+How to write a “Hello, Takusen!” query.
+</li>
+</ol>
+</div>
+<div>
+<span class="Apple-style-span" style="font-size: x-large;">Let’s Get Started!</span>
+</div>
+<div>
+<p>If you already have your database setup, just skip to section 2 below.</p>
+<span class="Apple-style-span" style="font-size: x-large;">1. Getting things Setup!</span>
+</div>
+<div>
+First off, I will describe the environment I used to write this tutorial.  I like to develop using virtual machines whenever I can.  This allows me to start from a clean environment without interfering with any of my other projects.  I chose <a href="http://www.virtualbox.org/">Virtual Box</a> as my emulation software.  I installed Debian Squeeze, from <a href="http://www.debian.org/devel/debian-installer/">here</a>.
+</div>
+<div>
+
+</div>
+<div>
+During the install I requested a web server, ssh server, and SQL database.  My normal account name is ‘dagit’, as you will see below.
+</div>
+<div>
+
+</div>
+<div>
+After the install finished, I installed the following packages:
+</div>
+<div>
+<ul>
+<li>
+sudo
+</li>
+<li>
+pkg-config
+</li>
+<li>
+ghc6
+</li>
+<li>
+ghc6-prof
+</li>
+<li>
+cabal-install
+</li>
+<li>
+libz-dev
+</li>
+<li>
+postgresql-server-dev-8.4
+</li>
+<li>
+sqlite3
+</li>
+<li>
+libsqlite3-dev
+</li>
+<li>
+unixodbc-dev
+</li>
+</ul>
+</div>
+<div>
+If you are only going to use a specific database then you can safely leave out the other database packages above.  For example, you only need unixodbc-dev if you are going to install the ODBC backend, see below.  This command should install everything above:
+</div>
+<pre class="brush: shell;toolbar: false;">$ apt-get install sudo pkg-config ghc6 ghc6-prof cabal-install libz-dev postgresql-server-dev-8.4 sqlite3 libsqlite3-dev unixodbc-dev</pre>
+<div>
+Next, I ran:
+</div>
+<pre class="brush: shell;toolbar: false;">$ cabal install QuickCheck --constraint=&quot;==1.*&quot;</pre>
+At this point you should have all the dependencies of Takusen.  The next step is to install the backends we might want to use.  For example:
+<pre class="brush: shell;toolbar: false;">$ cabal install Takusen -fpostgres -fsqlite -fodbc</pre>
+<p>The command above will give us the postgres, sqlite, and odbc backends.  If you don’t need a backend, just omit it during the cabal-install command above. At this point I installed a few other things such as emacs and darcs to make my development experience friendlier.</p>
+Configuring postgres is beyond the scope of this tutorial, but for reference here are the commands I used to get started with a “hellotakusen” database.
+<pre class="brush: shell;toolbar: false;">$ sudo su postgres # Switching to postgres user
+$ createuser dagit # same as your unix account name
+Shall the new role be a superuser? (y/n) y
+$ createdb dagit # create dagit's default db</pre>
+I made myself a superuser for convenience, after all this is just a dev machine.   Now switch back to your normal user account.  In my case, that account is ‘dagit’.  Now as ‘dagit’, I run:
+<pre class="brush: shell;toolbar: false;">$ createdb hellotakusen</pre>
+This gives us a demo database separate from the default user database.  Let’s double check our database:
+<pre class="brush: shell;toolbar: false;">$ psql -d hellotakusen
+psql (8.4.4)
+Type &quot;help&quot; for help.
+
+
+hellotakusen=#</pre>
+<div>
+Okay, looks good.  Now let’s try a simple query:
+</div>
+<pre class="brush: sql;toolbar: false;">hellotakusen=# select 'Hello, Takusen!';
+
+?column?
+----------------
+Hello, Takusen!
+
+(1 row)</pre>
+<div>
+<span class="Apple-style-span" style="font-size: x-large;">2. Time do a query with Takusen!</span>
+</div>
+<div>
+Now we’re ready to do the same thing, but from Haskell.  Let’s start with GHCi.  I’ll run through the minimum set of commands to get this query working, then I’ll explain what we’re doing at each step, and why:
+</div>
+<pre class="brush: shell;toolbar: false; highlight: [1,6,7]">$ ghci
+GHCi, version 6.12.1: http://www.haskell.org/ghc/  :? for help
+Loading package ghc-prim ... linking ... done.
+Loading package integer-gmp ... linking ... done.
+Loading package base ... linking ... done.
+Prelude&gt; :m + Database.PostgreSQL.Enumerator
+Prelude Database.PostgreSQL.Enumerator&gt; let connection = connect [CAdbname &quot;hellotakusen&quot;]
+Loading package syb-0.1.0.2 ... linking ... done.
+Loading package base-3.0.3.2 ... linking ... done.
+Loading package mtl-1.1.0.2 ... linking ... done.
+Loading package old-locale-1.0.0.2 ... linking ... done.
+Loading package old-time-1.0.0.3 ... linking ... done.
+Loading package time-1.1.4 ... linking ... done.
+Loading package Takusen-0.8.6 ... linking ... done.
+</pre>
+<div>
+Now we have a connection structure to our Postgres database.  Now we switch to the interface just one level above the database specific one to define an iteratee to fetch our results.
+</div>
+<pre class="brush: hs;toolbar: false;">Prelude Database.PostgreSQL.Enumerator&gt; :m + Database.Enumerator
+Prelude Database.PostgreSQL.Enumerator Database.Enumerator&gt; let { iter :: Monad m =&gt; String -&gt; IterAct m (Maybe String); iter msg accum = result' (Just msg) }</pre>
+<div>
+We will use <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">iter</span> with <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">doQuery</span>, to fetch the result of our query,  and immediately print it like this:
+</div>
+<pre class="brush: hs;toolbar: false;">Prelude Database.PostgreSQL.Enumerator Database.Enumerator&gt; :m + Control.Monad.Trans
+Prelude Database.PostgreSQL.Enumerator Database.Enumerator Control.Monad.Trans&gt; withSession connection (doQuery (sql &quot;select 'Hello, Takusen!'&quot;) iter Nothing &gt;&gt;= \(Just r) -&gt; liftIO (putStrLn r))
+
+Hello, Takusen!
+</pre>
+<div>
+<span class="Apple-style-span" style="font-family: Times, 'Times New Roman', serif;"><span class="Apple-style-span" style="font-size: x-large;">Now it’s time to start explaining!</span></span>
+</div>
+<div>
+<span class="Apple-style-span" style="font-family: Times, 'Times New Roman', serif;"> </span>
+</div>
+<div>
+<span class="Apple-style-span" style="font-family: Times, 'Times New Roman', serif;">We have to give a type signature to </span>iter<span class="Apple-style-span" style="font-family: Times, 'Times New Roman', serif;"> or else we’ll get an incomprehensible error message involving functional dependencies:</span>
+</div>
+<pre class="brush: hs;toolbar: false;">Prelude Database.PostgreSQL.Enumerator Database.Enumerator Control.Monad.Trans&gt; withSession connection (doQuery (sql &quot;select 'Hello, Takusen!'&quot;) iter Nothing &gt;&gt;= \(Just r) -&gt; liftIO (putStrLn r))
+
+:1:24:
+    Overlapping instances for Database.Enumerator.QueryIteratee
+                                (DBM mark Session)
+                                Database.PostgreSQL.Enumerator.Query
+                                (a -&gt; t -&gt; m (IterResult (Maybe a)))
+                                (Maybe String)
+                                Database.PostgreSQL.Enumerator.ColumnBuffer
+      arising from a use of `doQuery' at :1:24-75
+    Matching instances:
+      instance [overlap ok] (Database.Enumerator.QueryIteratee
+                               m q i' seed b,
+                             DBType a q b) =&gt;
+                            Database.Enumerator.QueryIteratee m q (a -&gt; i') seed b
+        -- Defined in Database.Enumerator
+      instance [overlap ok] (DBType a q b, MonadIO m) =&gt;
+                            Database.Enumerator.QueryIteratee
+                              m q (a -&gt; seed -&gt; m (IterResult seed)) seed b
+        -- Defined in Database.Enumerator
+    (The choice depends on the instantiation of `mark, a, t, m'
+     To pick the first instance above, use -XIncoherentInstances
+     when compiling the other instance declarations)
+    In the first argument of `(&gt;&gt;=)', namely
+        `doQuery (sql &quot;select 'Hello, Takusen!'&quot;) iter Nothing'
+    In the second argument of `withSession', namely
+        `(doQuery (sql &quot;select 'Hello, Takusen!'&quot;) iter Nothing
+        &gt;&gt;=
+          \ (Just r) -&gt; liftIO (putStrLn r))'
+    In the expression:
+        withSession
+          connection
+          (doQuery (sql &quot;select 'Hello, Takusen!'&quot;) iter Nothing
+         &gt;&gt;=
+           \ (Just r) -&gt; liftIO (putStrLn r))
+</pre>
+<div>
+The problem itself is fairly simple.  If we don’t give the explicit signature, then the inferred type of <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">iter</span> is:
+</div>
+<pre class="brush: hs;toolbar: false;">iter :: (Monad m) =&gt; a -&gt; t -&gt; m (IterResult (Maybe a))</pre>
+<div>
+<span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;"> </span>
+</div>
+<div>
+Compared with our supplied type:
+</div>
+<div>
+<pre class="brush: hs;toolbar: false;">iter :: Monad m =&gt; String -&gt; IterAct m (Maybe String)</pre>
+</div>
+<div>
+<span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;"> </span>
+</div>
+<div>
+You should be asking yourself, what is the difference between “<span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">t -&gt; m (IterResult (Maybe a))</span>” and “<span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">IterAct m (Maybe String)</span>”.  Checking with the Takusen <a href="http://hackage.haskell.org/packages/archive/Takusen/0.8.6/doc/html/Database-Enumerator.html#t%3AIterAct">haddock</a>, we see this definition:
+</div>
+<pre class="brush: hs;toolbar: false;">type IterAct m seedType = seedType -&gt; m (IterResult seedType)
+</pre>
+<div>
+Let’s expand the <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">IterAct</span> type so we can more clearly compare the inferred type to the correct type:
+</div>
+<pre class="brush: hs; toolbar: false;">iter :: Monad m =&gt; String -&gt; Maybe String -&gt; m (IterResult (Maybe String))
+</pre>
+<div>
+So there is the problem.  If we don’t write the explicit type signature there was nothing in our definition of <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">iter</span> to help ghci infer that the second parameter is a <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">Maybe</span>.  You’ll also noticed that in the type synonym, <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">IterAct</span> that it is a function from a seed type to an action containing an <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">IterResult</span>.
+</div>
+<div>
+
+</div>
+<div>
+The seed here works just like the seed in a left fold.  The type of foldl is:
+</div>
+<pre class="brush: hs; toolbar: false;">foldl :: (a -&gt; b -&gt; a) -&gt; a -&gt; [b] -&gt; a
+</pre>
+<div>
+The second parameter is the seed type of <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">foldl</span> and it is of type <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">a</span>, here.  If you expand out a left fold, you will get an expression like this:
+</div>
+<pre class="brush: hs; toolbar: false;">foldl f z [a,b,c,d] = f (f (f (f z a) b) c) d
+</pre>
+<div>
+
+</div>
+<div>
+When we pass <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">iter</span> to <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">doQuery</span> it uses <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">iter</span> much like <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">foldl</span> uses <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">f</span>.  In the call to <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">foldl</span>, I called the seed <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">z</span>, and it is passed as the first parameter to <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">f</span>.  First <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">f</span> will combine <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">z</span> and <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">a</span>.  Then the result will be passed to <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">f</span> along with <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">b</span>.  The result keeps getting fed to <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">f</span> in this manner till we hit the end of the list.  So the first parameter to <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">f</span> is an accumulator because <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">f</span> can pass to itself the result of the previous call of <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">f</span>.  The first time <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">f</span> is called it will receive the seed value as the accumulator.
+</div>
+<div>
+
+</div>
+<div>
+When we defined <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">iter</span> we used the same exact convention, but you didn’t see the seed in the definition because the function <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">result’</span> hides this detail for convenience.  You can see it in the type when we expand out the type synonym <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">IterAct</span>.
+</div>
+<div>
+
+</div>
+<div>
+Where is the seed?  The seed was the last parameter we passed to <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">doQuery</span>.  In the example above, it was <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">Nothing</span>, and <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">iter</span> ignored it.  As this tutorial series expands, I will show you how to use the seed value.
+</div>
+<div>
+
+</div>
+<div>
+<span class="Apple-style-span" style="font-size: x-large;">Time to recap.</span>
+</div>
+<div>
+
+</div>
+<div>
+One simple rule is: Always try to give an explicit type signature to your iteratee function, here we called it <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">iter</span>.  If you get it wrong, the error message will be more forgiving than the error message you get from using it with <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">doQuery</span>.
+</div>
+<div>
+
+</div>
+<div>
+Another important lesson we learned is that our iteratees work with <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">doQuery</span> in exactly the same way as functions passed to <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">foldl</span>.  Specifically, they take an accumulator that has the same type as the seed we pass to <span class="Apple-style-span" style="font-family: 'Courier New', Courier, monospace;">doQuery</span>.  The iteratee is responsible for combining the accumulator and a ‘current value’ to produce a result.  In a future tutorial in this series, I will show you how to accumulate a list of results in the iteratee.
+</div>
+
+
+
+
+<section>
+ <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'dagit'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+        </div>
+        <div id="footer">
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html class="light cyan" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Keeping the &quot;science&quot; in Software Development</title>
+        <link rel="stylesheet" type="text/css" href="../css/solarized.css" />
+        <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+        <link rel="stylesheet" type="text/css" href="../css/default.css" />
+        <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-16820193-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+    </head>
+    <body>
+        <div id="header">
+            <div id="logo">
+                <a href="../">dagit.o</a>
+            </div>
+            <div id="navigation">
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../posts.html">Posts</a>
+            </div>
+        </div>
+
+        <div id="content">
+            <h1>Keeping the &quot;science&quot; in Software Development</h1>
+
+            
+<div class="info">Posted on January 18, 2012, in <a href="../tags/correctness.html">correctness</a>, <a href="../tags/evidence.html">evidence</a>, <a href="../tags/opinion.html">opinion</a>, <a href="../tags/proof.html">proof</a>, <a href="../tags/imported.html">imported</a></div>
+
+<p>If you already feel that math is a science you can safely skip the first section.  What follows are my musings on what it means to be “correct”, especially in software.  I pose a challenge at the end for practitioners and researchers.</p>
+<h1 id="math-is-science-too">Math is science too</h1>
+<p>According to Wikipedia the <a href="http://en.wikipedia.org/wiki/Scientific_method">scientific method</a> is:</p>
+<blockquote>
+<p>The scientific method is a body of techniques for investigating phenomena, acquiring new knowledge, or correcting and integrating previous knowledge. To be termed scientific, a method of inquiry must be based on empirical and measurable evidence subject to specific principles of reasoning.</p>
+</blockquote>
+<p>At first glance it may appear that mathematics doesn’t follow the scientific method above. The mathematics that you’re most likely familiar with is a collection of definitions and the facts, lemmas and theorems, about those definitions that result from applying logical deduction.  You might notice that if you reason that way, then textbook applications of newton’s three laws do not follow the scientific method either.</p>
+<p>You might argue that in this case the applications of newton’s laws is now mathematics and no longer science.  I would agree that it is mathematics and science.  Let’s see if I can convince you.</p>
+<p>By the time you see the definitions and corresponding theorems in a math text they have been reduced to facts.  The trial and error, as well as correction and integration of previous knowledge, have already happened.  The same is true of a textbook that shows you how to apply newton’s three laws.  I recommend taking a moment to familiarize yourself with <a href="http://www.maa.org/devlin/LockhartsLament.pdf">Lockhart’s lament</a>.</p>
+<p>Math only seems to not be a science because of our relationship to learning it.  Most of us get taught math as facts.  If you’ve taken a proof based course you may have had the experience of searching for proofs.  There is a lot of trial and error involved.  Mathematics as a field may have already integrated previous knowledge, but if you are taking a course chances are you have not.  So you employ trial and error as well as hypothesis refinement to build logical deductions to establish what your intuition, or pen and paper examples, says in true.</p>
+<p>The set of assumptions that you choose can make or break a result.  Even though mathematical results are timeless, they still bend to the sway of assumptions.  This is exactly what happens to empirical scientists too.  They think they know something, or have the right model, but later it turns out they reasoned from a flawed assumption and suddenly new data transform their field.</p>
+<h1 id="evidence-vs-proof">Evidence vs Proof</h1>
+<p>If you’ve studied proofs in different logical settings you may have noticed that what constitutes a proof depends on what you seek to gain from the proof.  See for example <a href="http://www.andrew.cmu.edu/user/avigad/Teaching/classical.pdf">classical logic versus constructive logic</a>.</p>
+<p>In a court case or a forensics study, people look for evidence or witnesses to give data points in support of a particular position within a larger case (or claim).</p>
+<p>Think about that for a minute.  A claim is made, then people try to establish it or refute it.  Often times, the assertion needs only be accepted or rejected by a “reasonable” skeptic that is willing to accept partial proof.  Such a skeptic might be a jury or peers reviewing a publication for acceptance in a journal.  Because we used partial proof new information could turn up later that reverses our understanding.</p>
+<p>At the other extreme we have mathematical proofs, which are composed of logical statements following from assumptions.  Proofs are <i>timeless</i>.  If we get our logic right and we’re clear about our assumptions then the result will stand forever.  I say “forever”, but in reality, proofs can be found to be incomplete, insufficiently rigorous, or using the wrong logic at a later date.  Sometimes years after the arguments are accepted.</p>
+<p>It seems that the difference here isn’t in whether the resulting “facts” are immutable but rather the strength with which we intend to make the claim.  In the forensics case, we are making a claim to the best of our incomplete knowledge about what happened.  In the case of mathematical proof, we are making a claim that should be true forever.</p>
+<p>In my opinion, the difference between “evidence” and “proof” exists to quantify the strength of our assertion that the claim or conjecture is true.  Claims can roughly be placed on a continuum from weak to strong.  Some claims, such as “a human authored this blog post”, are weak in nature and need little evidence.  Other claims, such as “the author of this blog post can see through walls”, is a hard to believe as there is good evidence that humans can’t see through walls. To prove the second claim I would hope that you demand really strong “evidence”.  Perhaps in the form of a demonstration, a scientific model for how I can do it, and validation from peer review.</p>
+<p>Due to the continuum for strength of evidence described above, I consider proofs to be a form of evidence.  Proofs, in the mathematical sense, being the strongest form of evidence.  Claims made by politicians would be on the extreme other end of my continuum.</p>
+<p>The strength of the evidence for the claim has practical applications too.  I wouldn’t engineer a shuttle to the moon based on arguments built by politicians.  I would base my engineering on mathematical proofs as getting to the moon requires a high degree of correctness.</p>
+<p>So then, what level of evidence is right if I need to be correct?</p>
+<h1 id="evidence-based-correctness">Evidence Based Correctness</h1>
+<p>Now we’re really at the heart of the matter.  Sometimes it just doesn’t matter if we’re correct or not, for example when arguing with a spouse.  Other times it matters deeply, like when we want to engineer a shuttle to the moon.</p>
+<p>While mathematics is obsessed with being unequivocally true, other branches of science have been trying to deepen their understanding while accepting a greater risk of being wrong.  This results in a different level of evidence required for progress.</p>
+
+<section>
+ <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'dagit'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+        </div>
+        <div id="footer">
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </div>
+    </body>
+</html>

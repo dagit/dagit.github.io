@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html class="light cyan" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Phantom Types, Existentials and Controlling Unification -- Part 1</title>
+        <link rel="stylesheet" type="text/css" href="../css/solarized.css" />
+        <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+        <link rel="stylesheet" type="text/css" href="../css/default.css" />
+        <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-16820193-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+    </head>
+    <body>
+        <div id="header">
+            <div id="logo">
+                <a href="../">dagit.o</a>
+            </div>
+            <div id="navigation">
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../posts.html">Posts</a>
+            </div>
+        </div>
+
+        <div id="content">
+            <h1>Phantom Types, Existentials and Controlling Unification -- Part 1</h1>
+
+            
+<div class="info">Posted on November 10, 2008, in <a href="../tags/haskell.html">haskell</a>, <a href="../tags/imported.html">imported</a>, <a href="../tags/types.html">types</a></div>
+
+<p>A phantom type is a type that has no value associated with it, such as the following:</p>
+<pre><code>data P phantom = P Int</code></pre>
+<p>Above, the type “phantom” has no value associated with it on the right-hand side of the equal sign. This means that whenever we construct a value of type P we also need to give a type for phantom, but because it has no value associated with it to constrain its type the type system can make it unify with anything. For example these are all valid:</p>
+<pre><code>P 5 :: P String
+P 5 :: P [Int]
+P 5 :: P (IO ())</code></pre>
+<p>The reason we care about phantom types is that they allow us to embed extra bits of information in our types. In this regard, you can think of phantom types as a tagging system for types. This allows you to, for example, encode a simpler type system within Haskell’s types. You could use this when making an evaluator for a language in Haskell.</p>
+<p>Now, there is a well known problem with the unification above. The problem is that P can be made to unify with all kinds of things. So people often use smart constructors to control the unification. For example, P would be declared in a module and the data constructor would not be exported from that module and instead you’d export functions like this:</p>
+<pre><code>mkIntP :: Int -&gt; P Int
+mkIntP n = P n
+
+mkStringP :: String -&gt; P String
+mkStringP s = P (length s)</code></pre>
+<p>Now you’ve controlled how the unification of the phantom type by not allowing users of your data type to choose how it unifies.</p>
+<p>Suppose we don’t know the full extent of the types that the user wants the phantom to unify with. Which is to say, there are an unbounded number of types for which the phantom can unify but you want to give the user of your code a way to control the unification.</p>
+<p>Let’s talk about existentials for a moment. We can give existential types by using a language extension that allows us to explicitly give a “forall” in the type. Now the oddity of giving an existential with a universal quantification is well documented but I won’t discuss it here. You might create a Seal type like this:</p>
+<pre><code>data Seal a = forall x. Seal (a x)</code></pre>
+<p>Now when we put a value inside a Seal we forget everything we know about the type x. The only thing we remember about x is that it exists. This means that when we open up the seal:</p>
+<pre><code>f :: Seal a -&gt; ()
+f (Seal a) = ()</code></pre>
+<p>We have to invent a new type for x. Here the type system is smart and creates a new fresh name, let’s call it an eigenvariable, for x inside the pattern match of f.</p>
+<p>This eigenvariable for x is distinct. The only type it is equal to is itself. This is because when we put x in the Seal we agreed to forget everything we ever knew about it–except that it exists. We could try this:</p>
+<pre><code>g :: Seal a -&gt; a x
+g (Seal a) = a</code></pre>
+<p>Here the type system is very smart and complains. The error message is a bit confusing, but what it is trying to tell us is that we cannot safely let the eigenvariable for x escape to a higher scope. Letting this happen has implications I won’t go into.</p>
+<p>Now, remember what I was saying about letting phantom types unify and wanting to control the unification? Well, Seal gives us a way to let the user put whatever types they want in the phantom type <b>and</b> it gives the user a way to control how that type unifies!</p>
+<pre><code>mkSealP :: a -&gt; Seal P
+mkSealP a = Seal (P a)</code></pre>
+<p>Now the user of our code can make a P with an arbitrary phantom type that we didn’t have to anticipate with a smart constructor and the user gains back control over how the phantom type of P will unify. With the current bit of code it won’t unify with much :)</p>
+<p>Now we’ve moved the problem from unifying with too much to not unifying with anything. Next time I’ll discuss some strategies for recovering information about x so that you can do something meaningful with that type.</p>
+
+<section>
+ <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'dagit'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+        </div>
+        <div id="footer">
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </div>
+    </body>
+</html>
