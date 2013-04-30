@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html class="light cyan" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>OpenCL + Language.C.Quote</title>
+        <link rel="stylesheet" type="text/css" href="../css/solarized.css" />
+        <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
+        <link rel="stylesheet" type="text/css" href="../css/default.css" />
+        <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-16820193-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+    </head>
+    <body>
+        <div id="header">
+            <div id="logo">
+                <a href="../">dagit.o</a>
+            </div>
+            <div id="navigation">
+                <a href="../">Home</a>
+                <a href="../about.html">About</a>
+                <a href="../contact.html">Contact</a>
+                <a href="../posts.html">Posts</a>
+            </div>
+        </div>
+
+        <div id="content">
+            <h1>OpenCL + Language.C.Quote</h1>
+
+            
+<div class="info">Posted on April 29, 2013, in <a href="../tags/haskell.html">haskell</a>, <a href="../tags/opencl.html">opencl</a></div>
+
+<p>Here is a simple introduction to combining Haskell, OpenCL, and Language.C.Quote into one coherent bundle. Our goal is to make a simple Haskell program that that embeds an OpenCL program and runs it on the GPU.</p>
+<p>Let’s start with <code>cabal init</code>. Make sure to add the following packages to your <code>build-depends</code>. I’m going to make an executable for this sample. My <code>example01.cabal</code> looks like this:</p>
+<pre><code>name:                example01
+version:             0.1.0.0
+license-file:        LICENSE
+build-type:          Simple
+cabal-version:       &gt;=1.8
+
+executable example01
+  main-is:             example01.hs
+  build-depends:       base
+                     , language-c-quote
+                     , OpenCL
+                     , srcloc
+                     , mainland-pretty</code></pre>
+<p>Next, we’re going to copy <code>example01.hs</code> from the OpenCL distribution and modify it slightly.</p>
+<p>Here is the original: <a href="https://github.com/IFCA/opencl/blob/master/examples/example01.hs">https://github.com/IFCA/opencl/blob/master/examples/example01.hs</a></p>
+<p>Here is our modified version (and stripped down to remove license, it was BSD3):</p>
+<pre class="sourceCode C"><code class="sourceCode c">{-# LANGUAGE QuasiQuotes #-}
+module Main where
+{- Copyright (c) <span class="dv">2011</span> Luis Cabellos -}
+import Control.Parallel.OpenCL
+import Foreign( castPtr, nullPtr, sizeOf )
+import Foreign.C.Types( CFloat )
+import Foreign.Marshal.Array( newArray, peekArray )
+import Language.C.Quote.OpenCL
+import Text.PrettyPrint.Mainland
+
+programSource :: String
+programSource = show $ ppr [cunit|
+__kernel <span class="dt">void</span> duparray(__global <span class="dt">float</span> *in, __global <span class="dt">float</span> *out)
+{
+  <span class="dt">int</span> id = get_global_id(<span class="dv">0</span>);
+  out[id] = <span class="dv">2</span>*in[id];
+}
+|]
+
+main :: IO ()
+main = <span class="kw">do</span>
+  putStrLn <span class="st">&quot;Compiling:&quot;</span>
+  putStrLn programSource
+  -- Initialize OpenCL
+  (platform:_) &lt;- clGetPlatformIDs
+  (dev:_) &lt;- clGetDeviceIDs platform CL_DEVICE_TYPE_ALL
+  context &lt;- clCreateContext [CL_CONTEXT_PLATFORM platform] [dev] print
+  q &lt;- clCreateCommandQueue context dev []
+  
+  -- Initialize Kernel
+  program &lt;- clCreateProgramWithSource context programSource
+  clBuildProgram program [dev] <span class="st">&quot;&quot;</span>
+  kernel &lt;- clCreateKernel program <span class="st">&quot;duparray&quot;</span>
+  
+  -- Initialize parameters
+  let original = [<span class="dv">0</span> .. <span class="dv">20</span>] :: [CFloat]
+      elemSize = sizeOf (<span class="dv">0</span> :: CFloat)
+      vecSize = elemSize * length original
+  putStrLn $ <span class="st">&quot;Original array = &quot;</span> ++ show original
+  input  &lt;- newArray original
+
+  mem_in &lt;- clCreateBuffer context [CL_MEM_READ_ONLY, CL_MEM_COPY_HOST_PTR] (vecSize, castPtr input)  
+  mem_out &lt;- clCreateBuffer context [CL_MEM_WRITE_ONLY] (vecSize, nullPtr)
+
+  clSetKernelArgSto kernel <span class="dv">0</span> mem_in
+  clSetKernelArgSto kernel <span class="dv">1</span> mem_out
+  
+  -- Execute Kernel
+  eventExec &lt;- clEnqueueNDRangeKernel q kernel [length original] [<span class="dv">1</span>] []
+  
+  -- Get Result
+  eventRead &lt;- clEnqueueReadBuffer q mem_out True <span class="dv">0</span> vecSize (castPtr input) [eventExec]
+  
+  result &lt;- peekArray (length original) input
+  putStrLn $ <span class="st">&quot;Result array = &quot;</span> ++ show result
+
+  <span class="kw">return</span> ()</code></pre>
+<p>The important part is that we replaced the string version of the OpenCL program (<code>programSource</code>) with a quasiquoter version. We use <code>cunit</code> from <code>Language.C.Quote.OpenCL</code> to parse the OpenCL program as a Haskell data type. Then we can use <code>ppr</code> from <code>Text.PrettyPrint.Mainland</code> plus <code>show</code> to run it back into a string. We could also do more interesting things. We could use Haskell as a macro language or we could use antiquotation to insert Haskell values into the program. Essentially, Haskell becomes our meta-language for working with OpenCL programs.</p>
+<p><strong>Note:</strong> Each platform may require slightly different flags to cabal to find your native OpenCL. On windows, I installed NVIDIA’s OpenCL implementation, so I add:</p>
+<pre><code>--extra-lib-dirs=&quot;C:\Program Files\NVIDIA Corporation\OpenCL&quot;</code></pre>
+<p>when running <code>cabal install</code> or <code>cabal-dev install</code>.</p>
+
+<section>
+ <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'dagit'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</section>
+
+        </div>
+        <div id="footer">
+            Site proudly generated by
+            <a href="http://jaspervdj.be/hakyll">Hakyll</a>
+        </div>
+    </body>
+</html>
