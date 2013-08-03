@@ -8,8 +8,63 @@
         <name>Jason Dagit</name>
         <email>dagitj@gmail.com</email>
     </author>
-    <updated>2013-04-29T00:00:00Z</updated>
+    <updated>2013-08-03T00:00:00Z</updated>
     <entry>
+    <title>Getting Started With GHC Hacking</title>
+    <link href="http://blog.codersbase.com/posts/2013-08-03-getting-started-with-ghc-hacking.html" />
+    <id>http://blog.codersbase.com/posts/2013-08-03-getting-started-with-ghc-hacking.html</id>
+    <published>2013-08-03T00:00:00Z</published>
+    <updated>2013-08-03T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p>In my opinion, GHC may very well be the best documented open source project. And despite this, lots of folks still ask “How can I get started?” or “Has anyone written a guide on how to contribute to GHC?” and similar questions.</p>
+<p>The goal of this article is two fold:</p>
+<ul>
+<li>Get the message out that there is documentation for getting started with hacking on GHC and contributing back to GHC HQ.</li>
+<li>Provide a template for boostrapping yourself into GHC hacking.</li>
+</ul>
+<p>I assume that as a reader you are motivated, enthusiastic, and you know Haskell. Recall that we learn best by doing. You have to dive in. So before we go any further:</p>
+<pre><code>git clone https://github.com/ghc/ghc.git</code></pre>
+<p>While we wait for that to finish, let’s dive in :)</p>
+<h1 id="drinking-from-the-firehose">Drinking from the firehose</h1>
+<p>GHC has been the subject of many academic papers. These papers are good for understanding the intuition and motivation behind the source code you’ll find in the GHC repository. The vast majority of the papers about GHC are very approachable and well written, <em>if</em> you have the right background. As such, you will need to find a way to develop that background and “level up” before the papers will be useful to you. Read the section on leveling up for more information about this.</p>
+<p>In addition to research publications (and perhaps, more widely approachable), the GHC source code is very well commented and the GHC trac has a wealth of information. Let’s try to enumerate all the places you can find out about GHC:</p>
+<ul>
+<li><a href="http://research.microsoft.com/en-us/um/people/simonpj/papers/papers.html">Simon Peyton-Jones’ research publications</a></li>
+<li>GHC Trac
+<ul>
+<li><a href="http://ghc.haskell.org/trac/ghc/query?status=new&amp;status=assigned&amp;status=reopened&amp;group=priority&amp;type=bug&amp;order=id&amp;desc=1">Tickets</a></li>
+<li><a href="http://ghc.haskell.org/trac/ghc/wiki/Commentary">Wiki</a></li>
+</ul></li>
+<li><a href="https://github.com/ghc/ghc">The excellently commented source code itself</a></li>
+<li><a href="http://irc.lc/freenode/ghc/">#ghc</a> on freenode</li>
+<li>GHC mailing lists
+<ul>
+<li><a href="http://www.haskell.org/mailman/listinfo/ghc-devs">ghc-devs</a></li>
+<li><a href="http://www.haskell.org/mailman/listinfo/glasgow-haskell-users">ghc-users</a></li>
+</ul></li>
+<li>Books
+<ul>
+<li><a href="http://www.aosabook.org/en/ghc.html">“The Architecture of Open Source Applications”</a></li>
+<li><a href="http://research.microsoft.com/en-us/um/people/simonpj/papers/pj-lester-book/">“Implementing functional languages: a tutorial”</a></li>
+</ul></li>
+</ul>
+<p>The commentary page of the GHC Trac is specifically design to answer the question, “How do I get started hacking on GHC?”. If there is only one link that you follow from this post, follow this one: [http://ghc.haskell.org/trac/ghc/wiki/Commentary]((http://ghc.haskell.org/trac/ghc/wiki/Commentary)</p>
+<h1 id="finding-your-way">Finding your way</h1>
+<p>Now for the second half of this post. How to “level up” so that you have sufficient skills to contribute to GHC in a meaningful way. Here is a list of things that will help you or anyone else become a GHC contributor. Remeber, you really can’t start to small:</p>
+<ul>
+<li>Get a local build working</li>
+<li>Write some code to add a trivial feature (change the ghci banner for example)</li>
+<li>Build your modified version and see it work</li>
+<li>Find an expert who is willing to help you (try IRC or the mailing lists)</li>
+<li>Find an easy bug and fix it</li>
+</ul>
+<p>If you get this far, you’ll have made it further than most haskellers! At this point, you’ll have the skills and knowledge necessary to fix bugs. Keep in mind that bug fix contributions are very valuable in the open source world where core contributors would rather spend their time on new features (or similar tasks where their deep expertise is required).</p>
+<p>If your ambition is to develop true GHC wizardry (eg., understanding the research publications and the source code deeply) you’ll have a long road ahead of you. A road where continuing to fix bugs and other modest contributions will accelerate you down the path.</p>
+<p>What you’ll need to get there is time to play with the ideas in the publications. For example, I wanted to understand how to make a new backend for ghc. So I started reading papers about the intermediate representation that GHC uses and also I started doing the exercises in the book, <a href="http://research.microsoft.com/en-us/um/people/simonpj/papers/pj-lester-book/">“Implementing functional languages: a tutorial”</a>.</p>
+<p>Read everything you can and implement the ideas (even in a “toy” way) and play with it. Doing this gives you much deep understanding that just reading. Then when you go back to the GHC sources much more of it will make intuitive sense to you because you now understand the principles it is derived from.</p>
+<h1 id="parting-words">Parting words</h1>
+<p>Fire up your editor and get to work :)</p>]]></summary>
+</entry>
+<entry>
     <title>OpenCL + Language.C.Quote</title>
     <link href="http://blog.codersbase.com/posts/2013-04-29-opencl-and-language-c-quote.html" />
     <id>http://blog.codersbase.com/posts/2013-04-29-opencl-and-language-c-quote.html</id>
@@ -73,8 +128,11 @@ main <span class="fu">=</span> <span class="kw">do</span>
   <span class="fu">putStrLn</span> <span class="fu">$</span> <span class="st">&quot;Original array = &quot;</span> <span class="fu">++</span> <span class="fu">show</span> original
   input  <span class="ot">&lt;-</span> newArray original
 
-  mem_in <span class="ot">&lt;-</span> clCreateBuffer context [<span class="dt">CL_MEM_READ_ONLY</span>, <span class="dt">CL_MEM_COPY_HOST_PTR</span>] (vecSize, castPtr input)  
-  mem_out <span class="ot">&lt;-</span> clCreateBuffer context [<span class="dt">CL_MEM_WRITE_ONLY</span>] (vecSize, nullPtr)
+  mem_in <span class="ot">&lt;-</span> clCreateBuffer context [<span class="dt">CL_MEM_READ_ONLY</span>
+                                   ,<span class="dt">CL_MEM_COPY_HOST_PTR</span>]
+                                   (vecSize, castPtr input)  
+  mem_out <span class="ot">&lt;-</span> clCreateBuffer context [<span class="dt">CL_MEM_WRITE_ONLY</span>]
+                                    (vecSize, nullPtr)
 
   clSetKernelArgSto kernel <span class="dv">0</span> mem_in
   clSetKernelArgSto kernel <span class="dv">1</span> mem_out
@@ -83,7 +141,8 @@ main <span class="fu">=</span> <span class="kw">do</span>
   eventExec <span class="ot">&lt;-</span> clEnqueueNDRangeKernel q kernel [<span class="fu">length</span> original] [<span class="dv">1</span>] []
   
   <span class="co">-- Get Result</span>
-  eventRead <span class="ot">&lt;-</span> clEnqueueReadBuffer q mem_out <span class="kw">True</span> <span class="dv">0</span> vecSize (castPtr input) [eventExec]
+  eventRead <span class="ot">&lt;-</span> clEnqueueReadBuffer q mem_out <span class="kw">True</span> <span class="dv">0</span> vecSize (castPtr input)
+                                                            [eventExec]
   
   result <span class="ot">&lt;-</span> peekArray (<span class="fu">length</span> original) input
   <span class="fu">putStrLn</span> <span class="fu">$</span> <span class="st">&quot;Result array = &quot;</span> <span class="fu">++</span> <span class="fu">show</span> result
@@ -741,33 +800,33 @@ So far I’m not sure.  I suspect, without working through the details, that in
     <published>2008-11-10T00:00:00Z</published>
     <updated>2008-11-10T00:00:00Z</updated>
     <summary type="html"><![CDATA[<p>A phantom type is a type that has no value associated with it, such as the following:</p>
-<pre><code>data P phantom = P Int</code></pre>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">P</span> phantom <span class="fu">=</span> <span class="dt">P</span> <span class="dt">Int</span></code></pre>
 <p>Above, the type “phantom” has no value associated with it on the right-hand side of the equal sign. This means that whenever we construct a value of type P we also need to give a type for phantom, but because it has no value associated with it to constrain its type the type system can make it unify with anything. For example these are all valid:</p>
-<pre><code>P 5 :: P String
-P 5 :: P [Int]
-P 5 :: P (IO ())</code></pre>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">P</span> <span class="dv">5</span><span class="ot"> ::</span> <span class="dt">P</span> <span class="dt">String</span>
+<span class="dt">P</span> <span class="dv">5</span><span class="ot"> ::</span> <span class="dt">P</span> [<span class="dt">Int</span>]
+<span class="dt">P</span> <span class="dv">5</span><span class="ot"> ::</span> <span class="dt">P</span> (<span class="dt">IO</span> ())</code></pre>
 <p>The reason we care about phantom types is that they allow us to embed extra bits of information in our types. In this regard, you can think of phantom types as a tagging system for types. This allows you to, for example, encode a simpler type system within Haskell’s types. You could use this when making an evaluator for a language in Haskell.</p>
 <p>Now, there is a well known problem with the unification above. The problem is that P can be made to unify with all kinds of things. So people often use smart constructors to control the unification. For example, P would be declared in a module and the data constructor would not be exported from that module and instead you’d export functions like this:</p>
-<pre><code>mkIntP :: Int -&gt; P Int
-mkIntP n = P n
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">mkIntP ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">P</span> <span class="dt">Int</span>
+mkIntP n <span class="fu">=</span> <span class="dt">P</span> n
 
-mkStringP :: String -&gt; P String
-mkStringP s = P (length s)</code></pre>
+<span class="ot">mkStringP ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">P</span> <span class="dt">String</span>
+mkStringP s <span class="fu">=</span> <span class="dt">P</span> (<span class="fu">length</span> s)</code></pre>
 <p>Now you’ve controlled how the unification of the phantom type by not allowing users of your data type to choose how it unifies.</p>
 <p>Suppose we don’t know the full extent of the types that the user wants the phantom to unify with. Which is to say, there are an unbounded number of types for which the phantom can unify but you want to give the user of your code a way to control the unification.</p>
 <p>Let’s talk about existentials for a moment. We can give existential types by using a language extension that allows us to explicitly give a “forall” in the type. Now the oddity of giving an existential with a universal quantification is well documented but I won’t discuss it here. You might create a Seal type like this:</p>
-<pre><code>data Seal a = forall x. Seal (a x)</code></pre>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Seal</span> a <span class="fu">=</span> forall x<span class="fu">.</span> <span class="dt">Seal</span> (a x)</code></pre>
 <p>Now when we put a value inside a Seal we forget everything we know about the type x. The only thing we remember about x is that it exists. This means that when we open up the seal:</p>
-<pre><code>f :: Seal a -&gt; ()
-f (Seal a) = ()</code></pre>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">f ::</span> <span class="dt">Seal</span> a <span class="ot">-&gt;</span> ()
+f (<span class="dt">Seal</span> a) <span class="fu">=</span> ()</code></pre>
 <p>We have to invent a new type for x. Here the type system is smart and creates a new fresh name, let’s call it an eigenvariable, for x inside the pattern match of f.</p>
 <p>This eigenvariable for x is distinct. The only type it is equal to is itself. This is because when we put x in the Seal we agreed to forget everything we ever knew about it–except that it exists. We could try this:</p>
-<pre><code>g :: Seal a -&gt; a x
-g (Seal a) = a</code></pre>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">g ::</span> <span class="dt">Seal</span> a <span class="ot">-&gt;</span> a x
+g (<span class="dt">Seal</span> a) <span class="fu">=</span> a</code></pre>
 <p>Here the type system is very smart and complains. The error message is a bit confusing, but what it is trying to tell us is that we cannot safely let the eigenvariable for x escape to a higher scope. Letting this happen has implications I won’t go into.</p>
 <p>Now, remember what I was saying about letting phantom types unify and wanting to control the unification? Well, Seal gives us a way to let the user put whatever types they want in the phantom type <b>and</b> it gives the user a way to control how that type unifies!</p>
-<pre><code>mkSealP :: a -&gt; Seal P
-mkSealP a = Seal (P a)</code></pre>
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">mkSealP ::</span> a <span class="ot">-&gt;</span> <span class="dt">Seal</span> <span class="dt">P</span>
+mkSealP a <span class="fu">=</span> <span class="dt">Seal</span> (<span class="dt">P</span> a)</code></pre>
 <p>Now the user of our code can make a P with an arbitrary phantom type that we didn’t have to anticipate with a smart constructor and the user gains back control over how the phantom type of P will unify. With the current bit of code it won’t unify with much :)</p>
 <p>Now we’ve moved the problem from unifying with too much to not unifying with anything. Next time I’ll discuss some strategies for recovering information about x so that you can do something meaningful with that type.</p>]]></summary>
 </entry>

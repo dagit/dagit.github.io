@@ -5,7 +5,6 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <title>OpenCL + Language.C.Quote</title>
         <link rel="stylesheet" type="text/css" href="../css/solarized.css" />
-        <link rel="stylesheet" type="text/css" href="../css/syntax.css" />
         <link rel="stylesheet" type="text/css" href="../css/default.css" />
         <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 <script type="text/javascript">
@@ -100,8 +99,11 @@ main <span class="fu">=</span> <span class="kw">do</span>
   <span class="fu">putStrLn</span> <span class="fu">$</span> <span class="st">&quot;Original array = &quot;</span> <span class="fu">++</span> <span class="fu">show</span> original
   input  <span class="ot">&lt;-</span> newArray original
 
-  mem_in <span class="ot">&lt;-</span> clCreateBuffer context [<span class="dt">CL_MEM_READ_ONLY</span>, <span class="dt">CL_MEM_COPY_HOST_PTR</span>] (vecSize, castPtr input)  
-  mem_out <span class="ot">&lt;-</span> clCreateBuffer context [<span class="dt">CL_MEM_WRITE_ONLY</span>] (vecSize, nullPtr)
+  mem_in <span class="ot">&lt;-</span> clCreateBuffer context [<span class="dt">CL_MEM_READ_ONLY</span>
+                                   ,<span class="dt">CL_MEM_COPY_HOST_PTR</span>]
+                                   (vecSize, castPtr input)  
+  mem_out <span class="ot">&lt;-</span> clCreateBuffer context [<span class="dt">CL_MEM_WRITE_ONLY</span>]
+                                    (vecSize, nullPtr)
 
   clSetKernelArgSto kernel <span class="dv">0</span> mem_in
   clSetKernelArgSto kernel <span class="dv">1</span> mem_out
@@ -110,7 +112,8 @@ main <span class="fu">=</span> <span class="kw">do</span>
   eventExec <span class="ot">&lt;-</span> clEnqueueNDRangeKernel q kernel [<span class="fu">length</span> original] [<span class="dv">1</span>] []
   
   <span class="co">-- Get Result</span>
-  eventRead <span class="ot">&lt;-</span> clEnqueueReadBuffer q mem_out <span class="kw">True</span> <span class="dv">0</span> vecSize (castPtr input) [eventExec]
+  eventRead <span class="ot">&lt;-</span> clEnqueueReadBuffer q mem_out <span class="kw">True</span> <span class="dv">0</span> vecSize (castPtr input)
+                                                            [eventExec]
   
   result <span class="ot">&lt;-</span> peekArray (<span class="fu">length</span> original) input
   <span class="fu">putStrLn</span> <span class="fu">$</span> <span class="st">&quot;Result array = &quot;</span> <span class="fu">++</span> <span class="fu">show</span> result
