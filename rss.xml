@@ -25,7 +25,7 @@
 <pre><code>git clone https://github.com/ghc/ghc.git</code></pre>
 <p>While we wait for that to finish, let’s dive in :)</p>
 <h1 id="drinking-from-the-firehose">Drinking from the firehose</h1>
-<p>GHC has been the subject of many academic papers. These papers are good for understanding the intuition and motivation behind the source code you’ll find in the GHC repository. The vast majority of the papers about GHC are very approachable and well written, <em>if</em> you have the right background. As such, you will need to find a way to develop that background and “level up” before the papers will be useful to you. Read the section on leveling up for more information about this.</p>
+<p>GHC has been the subject of many academic papers. These papers are good for understanding the intuition and motivation behind the source code you’ll find in the GHC repository. The vast majority of the papers about GHC are very approachable and well written, <em>if</em> you have the right background. As such, you will need to find a way to develop that background and “level up” before the papers will be useful to you. Read the section below, “Finding your way” for more information about this.</p>
 <p>In addition to research publications (and perhaps, more widely approachable), the GHC source code is very well commented and the GHC trac has a wealth of information. Let’s try to enumerate all the places you can find out about GHC:</p>
 <ul>
 <li><a href="http://research.microsoft.com/en-us/um/people/simonpj/papers/papers.html">Simon Peyton-Jones’ research publications</a></li>
@@ -47,15 +47,15 @@
 <li><a href="http://research.microsoft.com/en-us/um/people/simonpj/papers/pj-lester-book/">“Implementing functional languages: a tutorial”</a></li>
 </ul></li>
 </ul>
-<p>The commentary page of the GHC Trac is specifically design to answer the question, “How do I get started hacking on GHC?”. If there is only one link that you follow from this post, follow this one: [http://ghc.haskell.org/trac/ghc/wiki/Commentary]((http://ghc.haskell.org/trac/ghc/wiki/Commentary)</p>
+<p>The commentary page of the GHC Trac is specifically design to answer the question, “How do I get started hacking on GHC?”. If there is only one link that you follow from this post, follow this one: <a href="http://ghc.haskell.org/trac/ghc/wiki/Commentary">http://ghc.haskell.org/trac/ghc/wiki/Commentary</a></p>
 <h1 id="finding-your-way">Finding your way</h1>
-<p>Now for the second half of this post. How to “level up” so that you have sufficient skills to contribute to GHC in a meaningful way. Here is a list of things that will help you or anyone else become a GHC contributor. Remeber, you really can’t start to small:</p>
+<p>Now for the second half of this post. How to “level up” so that you have sufficient skills to contribute to GHC in a meaningful way. Here is a list of things that will help you or anyone else become a GHC contributor. Remeber, you really can’t start too small:</p>
 <ul>
 <li>Get a local build working</li>
 <li>Write some code to add a trivial feature (change the ghci banner for example)</li>
 <li>Build your modified version and see it work</li>
 <li>Find an expert who is willing to help you (try IRC or the mailing lists)</li>
-<li>Find an easy bug and fix it</li>
+<li>With the help of your expert friend, find an easy bug and fix it</li>
 </ul>
 <p>If you get this far, you’ll have made it further than most haskellers! At this point, you’ll have the skills and knowledge necessary to fix bugs. Keep in mind that bug fix contributions are very valuable in the open source world where core contributors would rather spend their time on new features (or similar tasks where their deep expertise is required).</p>
 <p>If your ambition is to develop true GHC wizardry (eg., understanding the research publications and the source code deeply) you’ll have a long road ahead of you. A road where continuing to fix bugs and other modest contributions will accelerate you down the path.</p>
