@@ -1,4 +1,5 @@
 cabal-dev/
+cabal.sandbox.config
 .cabal-sandbox/
 dist/
 _site/
