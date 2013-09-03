@@ -69,22 +69,22 @@ executable example01
 <span class="kw">import</span> Text.PrettyPrint.Mainland
 
 <span class="ot">programSource ::</span> <span class="dt">String</span>
-programSource <span class="fu">=</span> <span class="fu">show</span> <span class="fu">$</span> ppr [cunit<span class="fu">|</span>
+programSource <span class="fu">=</span> show <span class="fu">$</span> ppr [cunit<span class="fu">|</span>
 __kernel void duparray(__global float <span class="fu">*</span><span class="kw">in</span>, __global float <span class="fu">*</span>out)
 {
-  int <span class="fu">id</span> <span class="fu">=</span> get_global_id(<span class="dv">0</span>);
-  out[<span class="fu">id</span>] <span class="fu">=</span> <span class="dv">2</span><span class="fu">*</span><span class="kw">in</span>[<span class="fu">id</span>];
+  int id <span class="fu">=</span> get_global_id(<span class="dv">0</span>);
+  out[id] <span class="fu">=</span> <span class="dv">2</span><span class="fu">*</span><span class="kw">in</span>[id];
 }
 <span class="fu">|</span>]
 
 <span class="ot">main ::</span> <span class="dt">IO</span> ()
 main <span class="fu">=</span> <span class="kw">do</span>
-  <span class="fu">putStrLn</span> <span class="st">&quot;Compiling:&quot;</span>
-  <span class="fu">putStrLn</span> programSource
+  putStrLn <span class="st">&quot;Compiling:&quot;</span>
+  putStrLn programSource
   <span class="co">-- Initialize OpenCL</span>
   (platform<span class="fu">:</span>_) <span class="ot">&lt;-</span> clGetPlatformIDs
   (dev<span class="fu">:</span>_) <span class="ot">&lt;-</span> clGetDeviceIDs platform <span class="dt">CL_DEVICE_TYPE_ALL</span>
-  context <span class="ot">&lt;-</span> clCreateContext [<span class="dt">CL_CONTEXT_PLATFORM</span> platform] [dev] <span class="fu">print</span>
+  context <span class="ot">&lt;-</span> clCreateContext [<span class="dt">CL_CONTEXT_PLATFORM</span> platform] [dev] print
   q <span class="ot">&lt;-</span> clCreateCommandQueue context dev []
   
   <span class="co">-- Initialize Kernel</span>
@@ -95,8 +95,8 @@ main <span class="fu">=</span> <span class="kw">do</span>
   <span class="co">-- Initialize parameters</span>
   <span class="kw">let</span> original <span class="fu">=</span> [<span class="dv">0</span> <span class="fu">..</span> <span class="dv">20</span>]<span class="ot"> ::</span> [<span class="dt">CFloat</span>]
       elemSize <span class="fu">=</span> sizeOf (<span class="dv">0</span><span class="ot"> ::</span> <span class="dt">CFloat</span>)
-      vecSize <span class="fu">=</span> elemSize <span class="fu">*</span> <span class="fu">length</span> original
-  <span class="fu">putStrLn</span> <span class="fu">$</span> <span class="st">&quot;Original array = &quot;</span> <span class="fu">++</span> <span class="fu">show</span> original
+      vecSize <span class="fu">=</span> elemSize <span class="fu">*</span> length original
+  putStrLn <span class="fu">$</span> <span class="st">&quot;Original array = &quot;</span> <span class="fu">++</span> show original
   input  <span class="ot">&lt;-</span> newArray original
 
   mem_in <span class="ot">&lt;-</span> clCreateBuffer context [<span class="dt">CL_MEM_READ_ONLY</span>
@@ -109,16 +109,16 @@ main <span class="fu">=</span> <span class="kw">do</span>
   clSetKernelArgSto kernel <span class="dv">1</span> mem_out
   
   <span class="co">-- Execute Kernel</span>
-  eventExec <span class="ot">&lt;-</span> clEnqueueNDRangeKernel q kernel [<span class="fu">length</span> original] [<span class="dv">1</span>] []
+  eventExec <span class="ot">&lt;-</span> clEnqueueNDRangeKernel q kernel [length original] [<span class="dv">1</span>] []
   
   <span class="co">-- Get Result</span>
-  eventRead <span class="ot">&lt;-</span> clEnqueueReadBuffer q mem_out <span class="kw">True</span> <span class="dv">0</span> vecSize (castPtr input)
+  eventRead <span class="ot">&lt;-</span> clEnqueueReadBuffer q mem_out <span class="dt">True</span> <span class="dv">0</span> vecSize (castPtr input)
                                                             [eventExec]
   
-  result <span class="ot">&lt;-</span> peekArray (<span class="fu">length</span> original) input
-  <span class="fu">putStrLn</span> <span class="fu">$</span> <span class="st">&quot;Result array = &quot;</span> <span class="fu">++</span> <span class="fu">show</span> result
+  result <span class="ot">&lt;-</span> peekArray (length original) input
+  putStrLn <span class="fu">$</span> <span class="st">&quot;Result array = &quot;</span> <span class="fu">++</span> show result
 
-  <span class="fu">return</span> ()</code></pre>
+  return ()</code></pre>
 <p>The important part is that we replaced the string version of the OpenCL program (<code>programSource</code>) with a quasiquoter version. We use <code>cunit</code> from <code>Language.C.Quote.OpenCL</code> to parse the OpenCL program as a Haskell data type. Then we can use <code>ppr</code> from <code>Text.PrettyPrint.Mainland</code> plus <code>show</code> to run it back into a string. We could also do more interesting things. We could use Haskell as a macro language or we could use antiquotation to insert Haskell values into the program. Essentially, Haskell becomes our meta-language for working with OpenCL programs.</p>
 <p><strong>Note:</strong> Each platform may require slightly different flags to cabal to find your native OpenCL. On windows, I installed NVIDIA’s OpenCL implementation, so I add:</p>
 <pre><code>--extra-lib-dirs=&quot;C:\Program Files\NVIDIA Corporation\OpenCL&quot;</code></pre>

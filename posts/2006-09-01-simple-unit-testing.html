@@ -47,7 +47,7 @@
 <p>Template Haskell has a restriction on top level splices that says you cannot use a function in a splice if the function was defined in the same module as the splice. I already have a file in my project called “Utility.hs” where I store my general purpose and misc. functions so this is where I place things to be used in top level splices. This will make more sense when we get to mkCheck.</p>
 <p>When you define a test for QuickCheck the name always begins with <code>prop_</code>. Here is an example test:</p>
 <pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- from Tests.hs</span>
-prop_lrotate1 xs <span class="fu">=</span> lrotate (<span class="fu">length</span> xs) xs <span class="fu">==</span> xs
+prop_lrotate1 xs <span class="fu">=</span> lrotate (length xs) xs <span class="fu">==</span> xs
   <span class="kw">where</span> types <span class="fu">=</span><span class="ot"> xs ::</span> [<span class="dt">Int</span>]</code></pre>
 <p>This test says, whenver you rotate a list by its length you better get the original list back (obviously we are assuming a finite list). This test, also known as a property in quickcheck terminology, goes into Tests.hs.</p>
 <p>In Utility.hs I’ve defined some functions to read over Tests.hs and pull out the names of any properties. I decided to use a Haskell98 parser just to be safe, but you could use regular expressions here.</p>
@@ -59,25 +59,25 @@ tests <span class="fu">=</span> unsafePerformIO <span class="fu">$</span>
   <span class="kw">do</span> h <span class="ot">&lt;-</span> openFile <span class="st">&quot;src/Tests.hs&quot;</span> <span class="dt">ReadMode</span>
      s <span class="ot">&lt;-</span> hGetContents h
      <span class="kw">case</span> parseModule s <span class="kw">of</span>
-       (<span class="dt">ParseOk</span> (<span class="dt">HsModule</span> _ _ _ _ ds)) <span class="ot">-&gt;</span> <span class="fu">return</span> (<span class="fu">map</span> declName (<span class="fu">filter</span> isProp ds))
-       (<span class="dt">ParseFailed</span> loc s')            <span class="ot">-&gt;</span> <span class="fu">error</span> (s' <span class="fu">++</span> <span class="st">&quot; &quot;</span> <span class="fu">++</span> <span class="fu">show</span> loc)
+       (<span class="dt">ParseOk</span> (<span class="dt">HsModule</span> _ _ _ _ ds)) <span class="ot">-&gt;</span> return (map declName (filter isProp ds))
+       (<span class="dt">ParseFailed</span> loc s')            <span class="ot">-&gt;</span> error (s' <span class="fu">++</span> <span class="st">&quot; &quot;</span> <span class="fu">++</span> show loc)
 
 <span class="co">{- | checks if function binding name starts with @prop_@ indicating</span>
 <span class="co"> that it is a quickcheck property -}</span>
 <span class="ot">isProp ::</span> <span class="dt">HsDecl</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
 isProp d<span class="fu">@</span>(<span class="dt">HsFunBind</span> _) <span class="fu">=</span> <span class="st">&quot;prop_&quot;</span> <span class="ot">`isPrefixOf`</span> (declName d)
-isProp _ <span class="fu">=</span> <span class="kw">False</span>
+isProp _ <span class="fu">=</span> <span class="dt">False</span>
 
 <span class="co">{- | takes an HsDecl and returns the name of the declaration -}</span>
 <span class="ot">declName ::</span> <span class="dt">HsDecl</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
 declName (<span class="dt">HsFunBind</span> (<span class="dt">HsMatch</span> _ (<span class="dt">HsIdent</span> name) _ _ _<span class="fu">:</span>_)) <span class="fu">=</span> name
-declName _                                              <span class="fu">=</span> <span class="fu">undefined</span></code></pre>
+declName _                                              <span class="fu">=</span> undefined</code></pre>
 <p>Why do I need the <code>unsafePerformIO</code>? Well, that’s to get around a little problem I was having with top level splices. Perhaps if I were a little bit better with Template Haskell I wouldn’t need it. In this case it’s perfectly fine because we won’t be changing Tests.hs while we’re compiling the testsuite so the list of tests will not change while we’re using this function. Now that we have a list of test names we can build an AST to execute the tests. This is where Template Haskell comes in.</p>
 <pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- From Utility.hs</span>
-mkCheck name <span class="fu">=</span> [<span class="fu">|</span> <span class="fu">putStr</span> (name <span class="fu">++</span> <span class="st">&quot;: &quot;</span>)
+mkCheck name <span class="fu">=</span> [<span class="fu">|</span> putStr (name <span class="fu">++</span> <span class="st">&quot;: &quot;</span>)
                <span class="fu">&gt;&gt;</span> quickCheck <span class="fu">$</span>(varE (mkName name)) <span class="fu">|</span>]
 
-mkChecks []        <span class="fu">=</span> <span class="fu">undefined</span> <span class="co">-- if we don't have any tests, then the test suite is undefined right?</span>
+mkChecks []        <span class="fu">=</span> undefined <span class="co">-- if we don't have any tests, then the test suite is undefined right?</span>
 mkChecks [name]    <span class="fu">=</span> mkCheck name
 mkChecks (name<span class="fu">:</span>ns) <span class="fu">=</span> [<span class="fu">|</span> <span class="fu">$</span>(mkCheck name) <span class="fu">&gt;&gt;</span> <span class="fu">$</span>(mkChecks ns) <span class="fu">|</span>]</code></pre>
 <p>You can get fancier if you like, but I simply output the name of the test right before the status. That way when a test fails it’s easy to see which one.</p>
@@ -107,7 +107,7 @@ main <span class="fu">=</span> defaultMainWithHooks (defaultUserHooks { runTests
   quickCheck _ _ _ _ <span class="fu">=</span> <span class="kw">do</span> ec <span class="ot">&lt;-</span> system <span class="fu">$</span> <span class="st">&quot;ghc --make -odir dist/build -hidir dist/build -idist/build:src src/Unit.hs -main-is Unit.runTests -o unit&quot;</span>
                           <span class="kw">case</span> ec <span class="kw">of</span>
                             <span class="dt">ExitSuccess</span> <span class="ot">-&gt;</span> <span class="dt">System</span> <span class="st">&quot;unit&quot;</span>
-                            _           <span class="ot">-&gt;</span> <span class="fu">return</span> ec</code></pre>
+                            _           <span class="ot">-&gt;</span> return ec</code></pre>
 <p>Here I’m assuming you keep your source code in the “src” directory relative to the .cabal file. Now after you build, you should be able to test with, <code>runghc Setup.hs test</code>. I mentioned I’d talk more about that <code>-no-recomp</code> option in Unit.hs. I noticed that whever I compiled my program then compiled Unit.hs everything went smoothly but when I compiled Unit.hs in the normal flow of compiling my program that I would get errors about undefined symbols when I typed <code>runghc Setup.hs test</code>. To force ghc to always rebuild Unit.hs you just need to add <code>-no-recomp</code>. Another option would be system <code>touch src/Unit.hs</code> right before the ghc line in quickCheck above.</p>
 <p>Note: The setup described here matches mine as close as possible without some extra details specific to my project (I have a rule in my cabal file for building a dll. I didn’t show it here, but I’d be happy to send it to you if you need such a thing :). So it’s possible I’ve left out something simple like an import somewhere. So if you try these steps and get stuck let me know.</p>
 

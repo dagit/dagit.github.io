@@ -98,22 +98,22 @@ executable example01
 <span class="kw">import</span> Text.PrettyPrint.Mainland
 
 <span class="ot">programSource ::</span> <span class="dt">String</span>
-programSource <span class="fu">=</span> <span class="fu">show</span> <span class="fu">$</span> ppr [cunit<span class="fu">|</span>
+programSource <span class="fu">=</span> show <span class="fu">$</span> ppr [cunit<span class="fu">|</span>
 __kernel void duparray(__global float <span class="fu">*</span><span class="kw">in</span>, __global float <span class="fu">*</span>out)
 {
-  int <span class="fu">id</span> <span class="fu">=</span> get_global_id(<span class="dv">0</span>);
-  out[<span class="fu">id</span>] <span class="fu">=</span> <span class="dv">2</span><span class="fu">*</span><span class="kw">in</span>[<span class="fu">id</span>];
+  int id <span class="fu">=</span> get_global_id(<span class="dv">0</span>);
+  out[id] <span class="fu">=</span> <span class="dv">2</span><span class="fu">*</span><span class="kw">in</span>[id];
 }
 <span class="fu">|</span>]
 
 <span class="ot">main ::</span> <span class="dt">IO</span> ()
 main <span class="fu">=</span> <span class="kw">do</span>
-  <span class="fu">putStrLn</span> <span class="st">&quot;Compiling:&quot;</span>
-  <span class="fu">putStrLn</span> programSource
+  putStrLn <span class="st">&quot;Compiling:&quot;</span>
+  putStrLn programSource
   <span class="co">-- Initialize OpenCL</span>
   (platform<span class="fu">:</span>_) <span class="ot">&lt;-</span> clGetPlatformIDs
   (dev<span class="fu">:</span>_) <span class="ot">&lt;-</span> clGetDeviceIDs platform <span class="dt">CL_DEVICE_TYPE_ALL</span>
-  context <span class="ot">&lt;-</span> clCreateContext [<span class="dt">CL_CONTEXT_PLATFORM</span> platform] [dev] <span class="fu">print</span>
+  context <span class="ot">&lt;-</span> clCreateContext [<span class="dt">CL_CONTEXT_PLATFORM</span> platform] [dev] print
   q <span class="ot">&lt;-</span> clCreateCommandQueue context dev []
   
   <span class="co">-- Initialize Kernel</span>
@@ -124,8 +124,8 @@ main <span class="fu">=</span> <span class="kw">do</span>
   <span class="co">-- Initialize parameters</span>
   <span class="kw">let</span> original <span class="fu">=</span> [<span class="dv">0</span> <span class="fu">..</span> <span class="dv">20</span>]<span class="ot"> ::</span> [<span class="dt">CFloat</span>]
       elemSize <span class="fu">=</span> sizeOf (<span class="dv">0</span><span class="ot"> ::</span> <span class="dt">CFloat</span>)
-      vecSize <span class="fu">=</span> elemSize <span class="fu">*</span> <span class="fu">length</span> original
-  <span class="fu">putStrLn</span> <span class="fu">$</span> <span class="st">&quot;Original array = &quot;</span> <span class="fu">++</span> <span class="fu">show</span> original
+      vecSize <span class="fu">=</span> elemSize <span class="fu">*</span> length original
+  putStrLn <span class="fu">$</span> <span class="st">&quot;Original array = &quot;</span> <span class="fu">++</span> show original
   input  <span class="ot">&lt;-</span> newArray original
 
   mem_in <span class="ot">&lt;-</span> clCreateBuffer context [<span class="dt">CL_MEM_READ_ONLY</span>
@@ -138,16 +138,16 @@ main <span class="fu">=</span> <span class="kw">do</span>
   clSetKernelArgSto kernel <span class="dv">1</span> mem_out
   
   <span class="co">-- Execute Kernel</span>
-  eventExec <span class="ot">&lt;-</span> clEnqueueNDRangeKernel q kernel [<span class="fu">length</span> original] [<span class="dv">1</span>] []
+  eventExec <span class="ot">&lt;-</span> clEnqueueNDRangeKernel q kernel [length original] [<span class="dv">1</span>] []
   
   <span class="co">-- Get Result</span>
-  eventRead <span class="ot">&lt;-</span> clEnqueueReadBuffer q mem_out <span class="kw">True</span> <span class="dv">0</span> vecSize (castPtr input)
+  eventRead <span class="ot">&lt;-</span> clEnqueueReadBuffer q mem_out <span class="dt">True</span> <span class="dv">0</span> vecSize (castPtr input)
                                                             [eventExec]
   
-  result <span class="ot">&lt;-</span> peekArray (<span class="fu">length</span> original) input
-  <span class="fu">putStrLn</span> <span class="fu">$</span> <span class="st">&quot;Result array = &quot;</span> <span class="fu">++</span> <span class="fu">show</span> result
+  result <span class="ot">&lt;-</span> peekArray (length original) input
+  putStrLn <span class="fu">$</span> <span class="st">&quot;Result array = &quot;</span> <span class="fu">++</span> show result
 
-  <span class="fu">return</span> ()</code></pre>
+  return ()</code></pre>
 <p>The important part is that we replaced the string version of the OpenCL program (<code>programSource</code>) with a quasiquoter version. We use <code>cunit</code> from <code>Language.C.Quote.OpenCL</code> to parse the OpenCL program as a Haskell data type. Then we can use <code>ppr</code> from <code>Text.PrettyPrint.Mainland</code> plus <code>show</code> to run it back into a string. We could also do more interesting things. We could use Haskell as a macro language or we could use antiquotation to insert Haskell values into the program. Essentially, Haskell becomes our meta-language for working with OpenCL programs.</p>
 <p><strong>Note:</strong> Each platform may require slightly different flags to cabal to find your native OpenCL. On windows, I installed NVIDIA’s OpenCL implementation, so I add:</p>
 <pre><code>--extra-lib-dirs=&quot;C:\Program Files\NVIDIA Corporation\OpenCL&quot;</code></pre>
@@ -811,7 +811,7 @@ So far I’m not sure.  I suspect, without working through the details, that in
 mkIntP n <span class="fu">=</span> <span class="dt">P</span> n
 
 <span class="ot">mkStringP ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">P</span> <span class="dt">String</span>
-mkStringP s <span class="fu">=</span> <span class="dt">P</span> (<span class="fu">length</span> s)</code></pre>
+mkStringP s <span class="fu">=</span> <span class="dt">P</span> (length s)</code></pre>
 <p>Now you’ve controlled how the unification of the phantom type by not allowing users of your data type to choose how it unifies.</p>
 <p>Suppose we don’t know the full extent of the types that the user wants the phantom to unify with. Which is to say, there are an unbounded number of types for which the phantom can unify but you want to give the user of your code a way to control the unification.</p>
 <p>Let’s talk about existentials for a moment. We can give existential types by using a language extension that allows us to explicitly give a “forall” in the type. Now the oddity of giving an existential with a universal quantification is well documented but I won’t discuss it here. You might create a Seal type like this:</p>
@@ -1010,7 +1010,7 @@ mv c a</code></pre>
 <p>Template Haskell has a restriction on top level splices that says you cannot use a function in a splice if the function was defined in the same module as the splice. I already have a file in my project called “Utility.hs” where I store my general purpose and misc. functions so this is where I place things to be used in top level splices. This will make more sense when we get to mkCheck.</p>
 <p>When you define a test for QuickCheck the name always begins with <code>prop_</code>. Here is an example test:</p>
 <pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- from Tests.hs</span>
-prop_lrotate1 xs <span class="fu">=</span> lrotate (<span class="fu">length</span> xs) xs <span class="fu">==</span> xs
+prop_lrotate1 xs <span class="fu">=</span> lrotate (length xs) xs <span class="fu">==</span> xs
   <span class="kw">where</span> types <span class="fu">=</span><span class="ot"> xs ::</span> [<span class="dt">Int</span>]</code></pre>
 <p>This test says, whenver you rotate a list by its length you better get the original list back (obviously we are assuming a finite list). This test, also known as a property in quickcheck terminology, goes into Tests.hs.</p>
 <p>In Utility.hs I’ve defined some functions to read over Tests.hs and pull out the names of any properties. I decided to use a Haskell98 parser just to be safe, but you could use regular expressions here.</p>
@@ -1022,25 +1022,25 @@ tests <span class="fu">=</span> unsafePerformIO <span class="fu">$</span>
   <span class="kw">do</span> h <span class="ot">&lt;-</span> openFile <span class="st">&quot;src/Tests.hs&quot;</span> <span class="dt">ReadMode</span>
      s <span class="ot">&lt;-</span> hGetContents h
      <span class="kw">case</span> parseModule s <span class="kw">of</span>
-       (<span class="dt">ParseOk</span> (<span class="dt">HsModule</span> _ _ _ _ ds)) <span class="ot">-&gt;</span> <span class="fu">return</span> (<span class="fu">map</span> declName (<span class="fu">filter</span> isProp ds))
-       (<span class="dt">ParseFailed</span> loc s&#39;)            <span class="ot">-&gt;</span> <span class="fu">error</span> (s&#39; <span class="fu">++</span> <span class="st">&quot; &quot;</span> <span class="fu">++</span> <span class="fu">show</span> loc)
+       (<span class="dt">ParseOk</span> (<span class="dt">HsModule</span> _ _ _ _ ds)) <span class="ot">-&gt;</span> return (map declName (filter isProp ds))
+       (<span class="dt">ParseFailed</span> loc s&#39;)            <span class="ot">-&gt;</span> error (s&#39; <span class="fu">++</span> <span class="st">&quot; &quot;</span> <span class="fu">++</span> show loc)
 
 <span class="co">{- | checks if function binding name starts with @prop_@ indicating</span>
 <span class="co"> that it is a quickcheck property -}</span>
 <span class="ot">isProp ::</span> <span class="dt">HsDecl</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span>
 isProp d<span class="fu">@</span>(<span class="dt">HsFunBind</span> _) <span class="fu">=</span> <span class="st">&quot;prop_&quot;</span> <span class="ot">`isPrefixOf`</span> (declName d)
-isProp _ <span class="fu">=</span> <span class="kw">False</span>
+isProp _ <span class="fu">=</span> <span class="dt">False</span>
 
 <span class="co">{- | takes an HsDecl and returns the name of the declaration -}</span>
 <span class="ot">declName ::</span> <span class="dt">HsDecl</span> <span class="ot">-&gt;</span> <span class="dt">String</span>
 declName (<span class="dt">HsFunBind</span> (<span class="dt">HsMatch</span> _ (<span class="dt">HsIdent</span> name) _ _ _<span class="fu">:</span>_)) <span class="fu">=</span> name
-declName _                                              <span class="fu">=</span> <span class="fu">undefined</span></code></pre>
+declName _                                              <span class="fu">=</span> undefined</code></pre>
 <p>Why do I need the <code>unsafePerformIO</code>? Well, that’s to get around a little problem I was having with top level splices. Perhaps if I were a little bit better with Template Haskell I wouldn’t need it. In this case it’s perfectly fine because we won’t be changing Tests.hs while we’re compiling the testsuite so the list of tests will not change while we’re using this function. Now that we have a list of test names we can build an AST to execute the tests. This is where Template Haskell comes in.</p>
 <pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- From Utility.hs</span>
-mkCheck name <span class="fu">=</span> [<span class="fu">|</span> <span class="fu">putStr</span> (name <span class="fu">++</span> <span class="st">&quot;: &quot;</span>)
+mkCheck name <span class="fu">=</span> [<span class="fu">|</span> putStr (name <span class="fu">++</span> <span class="st">&quot;: &quot;</span>)
                <span class="fu">&gt;&gt;</span> quickCheck <span class="fu">$</span>(varE (mkName name)) <span class="fu">|</span>]
 
-mkChecks []        <span class="fu">=</span> <span class="fu">undefined</span> <span class="co">-- if we don&#39;t have any tests, then the test suite is undefined right?</span>
+mkChecks []        <span class="fu">=</span> undefined <span class="co">-- if we don&#39;t have any tests, then the test suite is undefined right?</span>
 mkChecks [name]    <span class="fu">=</span> mkCheck name
 mkChecks (name<span class="fu">:</span>ns) <span class="fu">=</span> [<span class="fu">|</span> <span class="fu">$</span>(mkCheck name) <span class="fu">&gt;&gt;</span> <span class="fu">$</span>(mkChecks ns) <span class="fu">|</span>]</code></pre>
 <p>You can get fancier if you like, but I simply output the name of the test right before the status. That way when a test fails it’s easy to see which one.</p>
@@ -1070,7 +1070,7 @@ main <span class="fu">=</span> defaultMainWithHooks (defaultUserHooks { runTests
   quickCheck _ _ _ _ <span class="fu">=</span> <span class="kw">do</span> ec <span class="ot">&lt;-</span> system <span class="fu">$</span> <span class="st">&quot;ghc --make -odir dist/build -hidir dist/build -idist/build:src src/Unit.hs -main-is Unit.runTests -o unit&quot;</span>
                           <span class="kw">case</span> ec <span class="kw">of</span>
                             <span class="dt">ExitSuccess</span> <span class="ot">-&gt;</span> <span class="dt">System</span> <span class="st">&quot;unit&quot;</span>
-                            _           <span class="ot">-&gt;</span> <span class="fu">return</span> ec</code></pre>
+                            _           <span class="ot">-&gt;</span> return ec</code></pre>
 <p>Here I’m assuming you keep your source code in the “src” directory relative to the .cabal file. Now after you build, you should be able to test with, <code>runghc Setup.hs test</code>. I mentioned I’d talk more about that <code>-no-recomp</code> option in Unit.hs. I noticed that whever I compiled my program then compiled Unit.hs everything went smoothly but when I compiled Unit.hs in the normal flow of compiling my program that I would get errors about undefined symbols when I typed <code>runghc Setup.hs test</code>. To force ghc to always rebuild Unit.hs you just need to add <code>-no-recomp</code>. Another option would be system <code>touch src/Unit.hs</code> right before the ghc line in quickCheck above.</p>
 <p>Note: The setup described here matches mine as close as possible without some extra details specific to my project (I have a rule in my cabal file for building a dll. I didn’t show it here, but I’d be happy to send it to you if you need such a thing :). So it’s possible I’ve left out something simple like an import somewhere. So if you try these steps and get stuck let me know.</p>]]></summary>
 </entry>

@@ -1,0 +1,21 @@
+name:                blag
+version:             0.1.0.0
+synopsis:            dagit.o: compilations of a developer
+-- description:         
+homepage:            http://blog.codersbase.com
+license:             BSD3
+license-file:        LICENSE
+author:              Jason Dagit
+maintainer:          dagitj@gmail.com
+-- copyright:           
+category:            Web
+build-type:          Simple
+cabal-version:       >=1.8
+
+executable blag
+  main-is:             site.hs
+  -- other-modules:       
+  build-depends:       base ==4.6.*
+                     , hakyll
+                     , containers
+                     , pandoc

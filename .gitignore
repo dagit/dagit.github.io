@@ -1,7 +1,8 @@
-dist
-cabal-dev
-*.o
-*.hi
-*.chi
-*.chs.h
-.virthualenv
+cabal-dev/
+.cabal-sandbox/
+dist/
+_site/
+_cache/
+*.swp
+*.swo
+.DS_Store

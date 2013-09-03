@@ -53,7 +53,7 @@
 mkIntP n <span class="fu">=</span> <span class="dt">P</span> n
 
 <span class="ot">mkStringP ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">P</span> <span class="dt">String</span>
-mkStringP s <span class="fu">=</span> <span class="dt">P</span> (<span class="fu">length</span> s)</code></pre>
+mkStringP s <span class="fu">=</span> <span class="dt">P</span> (length s)</code></pre>
 <p>Now you’ve controlled how the unification of the phantom type by not allowing users of your data type to choose how it unifies.</p>
 <p>Suppose we don’t know the full extent of the types that the user wants the phantom to unify with. Which is to say, there are an unbounded number of types for which the phantom can unify but you want to give the user of your code a way to control the unification.</p>
 <p>Let’s talk about existentials for a moment. We can give existential types by using a language extension that allows us to explicitly give a “forall” in the type. Now the oddity of giving an existential with a universal quantification is well documented but I won’t discuss it here. You might create a Seal type like this:</p>
