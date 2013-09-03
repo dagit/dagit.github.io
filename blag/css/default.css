@@ -68,6 +68,19 @@ table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode, table.sourceCode
 }
 
 td.lineNumbers { border-right: 1px solid #AAAAAA; text-align: right; color: #AAAAAA; padding-right: 5px; padding-left: 5px; }
+code { 
+  border-radius: 15px;
+  background-color: #eee;
+
+  padding: 2px;
+  margin-top: 2px;
+  margin-right: 2px;
+
+  border-radius: 15px;
+  -moz-border-radius: 15px;
+  font-family: monospace;
+  font-size: 14px;
+}
 pre { 
   border-radius: 15px;
   background-color: #eee;
@@ -76,6 +89,8 @@ pre {
   margin-right: 20px;
   border-radius: 15px;
   -moz-border-radius: 15px;
+  font-family: "Lucida Console", Monaco, monospace;
+  font-size: 14px;
 }
 td.sourceCode { padding-left: 5px; }
 pre.sourceCode span.kw { color: #007020; font-weight: bold; }
