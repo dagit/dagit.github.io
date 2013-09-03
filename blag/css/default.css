@@ -15,6 +15,7 @@ div#header {
     border-bottom: 2px solid;
     margin-bottom: 30px;
     padding: 12px 0px 12px 0px;
+    text-shadow: 2px 2px .06em #cdcdcd;
 }
 
 div#logo a {
@@ -22,6 +23,7 @@ div#logo a {
     font-size: 18px;
     font-weight: bold;
     text-decoration: none;
+    text-shadow: 2px 2px .06em #cdcdcd;
 }
 
 div#header #navigation {
@@ -46,11 +48,18 @@ div#footer {
 
 h1 {
     font-size: 24px;
+    text-shadow: 2px 2px .06em #cdcdcd;
 }
 
 h2 {
     font-size: 20px;
+    text-shadow: 2px 2px .06em #cdcdcd;
 }
+
+h3 {
+    text-shadow: 2px 2px .06em #cdcdcd;
+}
+
 
 div.info {
     font-size: 14px;
@@ -68,6 +77,15 @@ table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode, table.sourceCode
 }
 
 td.lineNumbers { border-right: 1px solid #AAAAAA; text-align: right; color: #AAAAAA; padding-right: 5px; padding-left: 5px; }
+
+pre > code {
+  box-shadow: none;
+}
+
+pre.line-pre {
+  box-shadow: none;
+}
+
 code { 
   border-radius: 15px;
   background-color: #eee;
@@ -78,9 +96,13 @@ code {
 
   border-radius: 15px;
   -moz-border-radius: 15px;
+
   font-family: monospace;
+  font-family: "Lucida Console", Monaco, monospace;
   font-size: 14px;
+  box-shadow: 2px 2px 1px #888888;
 }
+
 pre { 
   border-radius: 15px;
   background-color: #eee;
@@ -89,10 +111,12 @@ pre {
   margin-right: 20px;
   border-radius: 15px;
   -moz-border-radius: 15px;
+  box-shadow: 5px 5px 2px #888888;
+  font-family: monospace;
   font-family: "Lucida Console", Monaco, monospace;
   font-size: 14px;
-  box-shadow: 10px 10px 5px #888888;
 }
+
 td.sourceCode { padding-left: 5px; }
 pre.sourceCode span.kw { color: #007020; font-weight: bold; }
 pre.sourceCode span.dt { color: #902000; }
