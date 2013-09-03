@@ -80,6 +80,13 @@ td.lineNumbers { border-right: 1px solid #AAAAAA; text-align: right; color: #AAA
 
 pre > code {
   box-shadow: none;
+
+  padding: 0px;
+  margin-top: 0px;
+  margin-right: 0px;
+
+  border-radius: 0px;
+  -moz-border-radius: 0px;
 }
 
 pre.line-pre {
