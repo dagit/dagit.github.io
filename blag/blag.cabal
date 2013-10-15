@@ -15,7 +15,7 @@ cabal-version:       >=1.8
 executable blag
   main-is:             site.hs
   -- other-modules:       
-  build-depends:       base ==4.6.*
-                     , hakyll
+  build-depends:       base < 5
+                     , hakyll >= 4.4.1.0
                      , containers
                      , pandoc
