@@ -6,6 +6,7 @@
         <title>Installing Agda on Windows</title>
         <link rel="stylesheet" type="text/css" href="../css/default.css" />
         <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="https://raw.github.com/Mathapedia/LaTeX2HTML5/master/latex2html5.min.js"></script>
 <script type="text/javascript">
 
   var _gaq = _gaq || [];
@@ -67,7 +68,6 @@
 <p>Once the build finishes, it’s time to configure emacs. Use the agda-mode command to start the configuration:</p>
 <pre><code> agda-mode setup</code></pre></li>
 <li><p>Fire up emacs and open ~/.emacs. Mine looks something like this:</p>
-
 <script src="https://gist.github.com/4574857.js"></script>
 
 <p>You can see that I’ve configured my default font to be Deja Vu. You can set this via the menus, or just copy what I have. I’ve also got a bit in there that makes sure everything is setup to use utf8. I think that is optional. You’ll want to make sure you edit line 8 so that agda can find the standard library code that you downloaded.</p></li>
