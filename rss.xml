@@ -8,8 +8,41 @@
         <name>Jason Dagit</name>
         <email>dagitj@gmail.com</email>
     </author>
-    <updated>2013-10-13T00:00:00Z</updated>
+    <updated>2013-12-03T00:00:00Z</updated>
     <entry>
+    <title>Learning Dependent Types</title>
+    <link href="http://blog.codersbase.com/posts/2013-12-03-learning-dependent-types.html" />
+    <id>http://blog.codersbase.com/posts/2013-12-03-learning-dependent-types.html</id>
+    <published>2013-12-03T00:00:00Z</published>
+    <updated>2013-12-03T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p><em>Note: I originally wrote this explanation to help someone in our local Function Programming group get started. Later, I realized that it may be interested to a wider audience.</em></p>
+<p>Learning dependent types is not easy! In my experience it requires a lot self-directed study, googling, feeling dumb, and figuring out what questions to ask. Despite all that, it is quite rewarding and worthwhile.</p>
+<p>I started down that road some time back and I pick it up and put it down sporadically, so I haven’t made as much progress as I would like. Regular, diligent study is the only way to make it stick.</p>
+<p><strong>A bit of caution:</strong> Something to watch out for is what Bob Harper refers to as playing a game with the type checker, mentions it in the first lecture of his HoTT class that I linked below. He’s referring to situations where you try everything you can until it finally type checks and then you move on. I think the solution here is to not simply move on once it finally type checks. Instead you have to pick it apart and understand the solution. This is what I meant when I said you have to figure out what questions to ask.</p>
+<p>Another aside, Type theory and lambda calculus go together very well. It really pays off to study both. Rewriting is another related topic that is useful to understand, although you don’t have to become an expert. Of course, having a basic understanding of the curry-howard correspondence and logic is beneficial as well.</p>
+<p>The path I would suggest to people is roughly as follows, based on the philosophy that we learn best by doing and that it’s better to start with concrete and move towards abstract in due time:</p>
+<ol style="list-style-type: decimal">
+<li><p>Learn (or review) the untyped and simply typed lambda calculi. For example, make an interpreter in your favorite language. There are many great books and websites on the topic. Pick a few and get coding.</p></li>
+<li><p>Read (and implement) <a href="http://web.cecs.pdx.edu/~mpj/thih/">Typing Haskell in Haskell</a>. This will give you a sense of how type schema (or parametric polymorphism) change type checking and type inference (compared to simply typed). Make an effort to understand unification best you can. It will be very important when you get to dependently typed languages. If you can, think about the type equations that would be generated and how to solve them.</p></li>
+<li><p>Implement the toy dependently typed language, <a href="http://www.andres-loeh.de/LambdaPi/">LambdaPi</a>. You may find these resources handy as well:</p>
+<ul>
+<li><a href="http://math.andrej.com/2012/11/08/how-to-implement-dependent-type-theory-i/">http://math.andrej.com/2012/11/08/how-to-implement-dependent-type-theory-i/</a></li>
+<li><a href="http://www.cis.upenn.edu/~bcpierce/attapl/">http://www.cis.upenn.edu/~bcpierce/attapl/</a></li>
+<li><a href="http://www.cs.kent.ac.uk/people/staff/sjt/TTFP/">http://www.cs.kent.ac.uk/people/staff/sjt/TTFP/</a></li>
+</ul></li>
+<li><p>Start to tackle the <a href="http://www.cse.chalmers.se/~ulfn/papers/afp08/tutorial.pdf">Agda tutorial</a>. Chances are you will get stuck. When that happens, put it down for awhile, and try this <a href="http://oxij.org/note/BrutalDepTypes/">tutorial</a>. Eventually, pick it up again and review from the beginning and see if you can make it further.</p></li>
+</ol>
+<p>If you make it that far, you’ll have a very solid understanding of the basics. I also recommend reading a bit beyond your comfort zone. On reddit you can find both <a href="http://reddit.com/r/types">/r/types</a> and <a href="http://reddit.com/r/dependent_types">/r/dependent_types</a> where you can easily find advanced things outside of your comfort zone :)</p>
+<p>I’ve also found a few classes online where the lectures and problem sets are available:</p>
+<ul>
+<li><a href="http://www.cs.nott.ac.uk/~txa/g53cfr/">Computer Aided Formal Reasoning (G53CFR,G54CFR)</a></li>
+<li><a href="http://www.cs.swan.ac.uk/~csetzer/lectures/intertheo/07/interactiveTheoremProvingForAgdaUsers.html">Interactive Theorem Proving for Agda users</a></li>
+<li><a href="http://www.cl.cam.ac.uk/~ok259/agda-course-13/">Connor McBride’s Agda course</a></li>
+<li>Bob Harper’s <a href="http://www.cs.cmu.edu/~rwh/courses/hott/">HoTT course</a> (maybe not all that useful for Agda)</li>
+</ul>
+<p>Please let me know if you think I left something out!</p>]]></summary>
+</entry>
+<entry>
     <title>Trying out latex2html5.js</title>
     <link href="http://blog.codersbase.com/posts/2013-10-13-trying-out-latex2html5.html" />
     <id>http://blog.codersbase.com/posts/2013-10-13-trying-out-latex2html5.html</id>
@@ -101,12 +134,12 @@ executable example01
 <pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">{-# LANGUAGE QuasiQuotes #-}</span>
 <span class="kw">module</span> <span class="dt">Main</span> <span class="kw">where</span>
 <span class="co">{- Copyright (c) 2011 Luis Cabellos -}</span>
-<span class="kw">import</span> Control.Parallel.OpenCL
-<span class="kw">import</span> Foreign( castPtr, nullPtr, sizeOf )
-<span class="kw">import</span> Foreign.C.Types( CFloat )
-<span class="kw">import</span> Foreign.Marshal.Array( newArray, peekArray )
-<span class="kw">import</span> Language.C.Quote.OpenCL
-<span class="kw">import</span> Text.PrettyPrint.Mainland
+<span class="kw">import </span><span class="dt">Control.Parallel.OpenCL</span>
+<span class="kw">import </span><span class="dt">Foreign</span>( castPtr, nullPtr, sizeOf )
+<span class="kw">import </span><span class="dt">Foreign.C.Types</span>( <span class="dt">CFloat</span> )
+<span class="kw">import </span><span class="dt">Foreign.Marshal.Array</span>( newArray, peekArray )
+<span class="kw">import </span><span class="dt">Language.C.Quote.OpenCL</span>
+<span class="kw">import </span><span class="dt">Text.PrettyPrint.Mainland</span>
 
 <span class="ot">programSource ::</span> <span class="dt">String</span>
 programSource <span class="fu">=</span> show <span class="fu">$</span> ppr [cunit<span class="fu">|</span>
@@ -1058,8 +1091,8 @@ mkChecks (name<span class="fu">:</span>ns) <span class="fu">=</span> [<span clas
 <pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">{-# OPTIONS_GHC -fno-warn-unused-imports -no-recomp -fth #-}</span>
 <span class="kw">module</span> <span class="dt">Unit</span> <span class="kw">where</span>
 
-<span class="kw">import</span> Utility -- our TH functions
-<span class="kw">import</span> Tests -- our test cases
+<span class="kw">import </span><span class="dt">Utility</span> <span class="co">-- our TH functions</span>
+<span class="kw">import </span><span class="dt">Tests</span> <span class="co">-- our test cases</span>
 
 <span class="ot">runTests ::</span> <span class="dt">IO</span> ()
 runTests <span class="fu">=</span> <span class="fu">$</span>(mkChecks tests)</code></pre>
@@ -1071,9 +1104,9 @@ runTests <span class="fu">=</span> <span class="fu">$</span>(mkChecks tests)</co
 <p>(or use unit.exe if you’re on windows)</p>
 <h2 id="cabal">Cabal</h2>
 <p>I went a step further and made things work with Cabal. To do this, go into Setup.hs and make these changes:</p>
-<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import</span> Distribution.Simple
-<span class="kw">import</span> System.Cmd
-<span class="kw">import</span> System.Exit
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import </span><span class="dt">Distribution.Simple</span>
+<span class="kw">import </span><span class="dt">System.Cmd</span>
+<span class="kw">import </span><span class="dt">System.Exit</span>
 
 main <span class="fu">=</span> defaultMainWithHooks (defaultUserHooks { runTests <span class="fu">=</span> quickCheck } )
   <span class="kw">where</span>

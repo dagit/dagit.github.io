@@ -61,12 +61,12 @@ executable example01
 <pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">{-# LANGUAGE QuasiQuotes #-}</span>
 <span class="kw">module</span> <span class="dt">Main</span> <span class="kw">where</span>
 <span class="co">{- Copyright (c) 2011 Luis Cabellos -}</span>
-<span class="kw">import</span> Control.Parallel.OpenCL
-<span class="kw">import</span> Foreign( castPtr, nullPtr, sizeOf )
-<span class="kw">import</span> Foreign.C.Types( CFloat )
-<span class="kw">import</span> Foreign.Marshal.Array( newArray, peekArray )
-<span class="kw">import</span> Language.C.Quote.OpenCL
-<span class="kw">import</span> Text.PrettyPrint.Mainland
+<span class="kw">import </span><span class="dt">Control.Parallel.OpenCL</span>
+<span class="kw">import </span><span class="dt">Foreign</span>( castPtr, nullPtr, sizeOf )
+<span class="kw">import </span><span class="dt">Foreign.C.Types</span>( <span class="dt">CFloat</span> )
+<span class="kw">import </span><span class="dt">Foreign.Marshal.Array</span>( newArray, peekArray )
+<span class="kw">import </span><span class="dt">Language.C.Quote.OpenCL</span>
+<span class="kw">import </span><span class="dt">Text.PrettyPrint.Mainland</span>
 
 <span class="ot">programSource ::</span> <span class="dt">String</span>
 programSource <span class="fu">=</span> show <span class="fu">$</span> ppr [cunit<span class="fu">|</span>

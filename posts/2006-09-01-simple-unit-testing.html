@@ -85,8 +85,8 @@ mkChecks (name<span class="fu">:</span>ns) <span class="fu">=</span> [<span clas
 <pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">{-# OPTIONS_GHC -fno-warn-unused-imports -no-recomp -fth #-}</span>
 <span class="kw">module</span> <span class="dt">Unit</span> <span class="kw">where</span>
 
-<span class="kw">import</span> Utility -- our TH functions
-<span class="kw">import</span> Tests -- our test cases
+<span class="kw">import </span><span class="dt">Utility</span> <span class="co">-- our TH functions</span>
+<span class="kw">import </span><span class="dt">Tests</span> <span class="co">-- our test cases</span>
 
 <span class="ot">runTests ::</span> <span class="dt">IO</span> ()
 runTests <span class="fu">=</span> <span class="fu">$</span>(mkChecks tests)</code></pre>
@@ -98,9 +98,9 @@ runTests <span class="fu">=</span> <span class="fu">$</span>(mkChecks tests)</co
 <p>(or use unit.exe if you’re on windows)</p>
 <h2 id="cabal">Cabal</h2>
 <p>I went a step further and made things work with Cabal. To do this, go into Setup.hs and make these changes:</p>
-<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import</span> Distribution.Simple
-<span class="kw">import</span> System.Cmd
-<span class="kw">import</span> System.Exit
+<pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import </span><span class="dt">Distribution.Simple</span>
+<span class="kw">import </span><span class="dt">System.Cmd</span>
+<span class="kw">import </span><span class="dt">System.Exit</span>
 
 main <span class="fu">=</span> defaultMainWithHooks (defaultUserHooks { runTests <span class="fu">=</span> quickCheck } )
   <span class="kw">where</span>
