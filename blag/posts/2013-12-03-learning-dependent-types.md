@@ -5,7 +5,7 @@ tags: math, types, agda, advice
 
 *Note: I originally wrote this explanation to help someone in our local
 Function Programming group get started. Later, I realized that it may be
-interested to a wider audience.*
+interesting to a wider audience.*
 
 Learning dependent types is not easy! In my experience it requires a lot
 self-directed study, googling, feeling dumb, and figuring out what questions to
