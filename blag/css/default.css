@@ -64,20 +64,15 @@ div#content {
 
 h1 {
     font-size: 24px;
-    //text-shadow: 1px 1px .06em #cdcdcd;
     text-shadow: 1px 1px .06em #f0f4fe;
 }
 
 h2 {
     font-size: 20px;
-    text-shadow: 1px 1px .06em #cdcdcd;
-    text-shadow: 1px 1px .06em #ffffff;
     text-shadow: 1px 1px .06em #f0f4fe;
 }
 
 h3 {
-    text-shadow: 1px 1px .06em #cdcdcd;
-    text-shadow: 1px 1px .06em #ffffff;
     text-shadow: 1px 1px .06em #f0f4fe;
 }
 
