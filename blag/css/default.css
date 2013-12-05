@@ -1,6 +1,7 @@
 html {
     text-rendering: optimizeLegibility;
     font-family: Tahoma, Geneva, sans-serif;
+  background-color: #eee;
 }
 
 body {
@@ -46,18 +47,38 @@ div#footer {
     text-align: right;
 }
 
+div#content {
+    padding: 30px;
+    text-align: left;
+    background-color: #b0c4de;
+    border-radius: 15px;
+
+    margin-top: 2px;
+    margin-right: 2px;
+
+    border-radius: 15px;
+    -moz-border-radius: 15px;
+
+    box-shadow: 1px 1px 1px #888888;
+}
+
 h1 {
     font-size: 24px;
-    text-shadow: 1px 1px .06em #cdcdcd;
+    //text-shadow: 1px 1px .06em #cdcdcd;
+    text-shadow: 1px 1px .06em #f0f4fe;
 }
 
 h2 {
     font-size: 20px;
     text-shadow: 1px 1px .06em #cdcdcd;
+    text-shadow: 1px 1px .06em #ffffff;
+    text-shadow: 1px 1px .06em #f0f4fe;
 }
 
 h3 {
     text-shadow: 1px 1px .06em #cdcdcd;
+    text-shadow: 1px 1px .06em #ffffff;
+    text-shadow: 1px 1px .06em #f0f4fe;
 }
 
 
@@ -98,11 +119,11 @@ code {
   background-color: #eee;
 
   padding: 2px;
-  margin-top: 2px;
-  margin-right: 2px;
+  margin-top: 0px;
+  margin-right: 0px;
 
-  border-radius: 15px;
-  -moz-border-radius: 15px;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
 
   font-family: monospace;
   font-family: "Lucida Console", Monaco, monospace;
