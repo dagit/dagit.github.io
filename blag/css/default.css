@@ -18,6 +18,7 @@ div#header {
     margin-bottom: 30px;
     padding: 12px 0px 12px 0px;
     text-shadow: 1px 1px .06em #cdcdcd;
+    font-family: 'Skolar Bold', Palatino, Cambria, 'Droid Serif', Georgia, 'Times New Roman', Times, serif;
 }
 
 div#logo a {
@@ -65,16 +66,19 @@ div#content {
 
 h1 {
     font-size: 24px;
-    text-shadow: 1px 1px .06em #f0f4fe;
+    text-shadow: 1px 1px .06em #d8dce6;
+    font-family: 'Skolar Bold', Palatino, Cambria, 'Droid Serif', Georgia, 'Times New Roman', Times, serif;
 }
 
 h2 {
     font-size: 20px;
     text-shadow: 1px 1px .06em #f0f4fe;
+    font-family: 'Skolar Bold', Palatino, Cambria, 'Droid Serif', Georgia, 'Times New Roman', Times, serif;
 }
 
 h3 {
     text-shadow: 1px 1px .06em #f0f4fe;
+    font-family: 'Skolar Bold', Palatino, Cambria, 'Droid Serif', Georgia, 'Times New Roman', Times, serif;
 }
 
 
