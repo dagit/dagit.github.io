@@ -1,6 +1,7 @@
 html {
     text-rendering: optimizeLegibility;
-    font-family: Tahoma, Geneva, sans-serif;
+    /* font-family: Tahoma, Geneva, sans-serif; */
+    font-family: Helvetica, Arial, 'Lucida Grande', sans-serif;
   background-color: #eee;
 }
 
