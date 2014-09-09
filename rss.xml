@@ -8,8 +8,22 @@
         <name>Jason Dagit</name>
         <email>dagitj@gmail.com</email>
     </author>
-    <updated>2013-12-03T00:00:00Z</updated>
+    <updated>2014-09-08T00:00:00Z</updated>
     <entry>
+    <title>History of the MOS 6502</title>
+    <link href="http://blog.codersbase.com/posts/2014-09-08-History-of-the-MOS-6502.html" />
+    <id>http://blog.codersbase.com/posts/2014-09-08-History-of-the-MOS-6502.html</id>
+    <published>2014-09-08T00:00:00Z</published>
+    <updated>2014-09-08T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<p>Earlier this year I gave a talk at a local meetup for programmers called <a href="http://pdxbyte.org/">pdxbyte</a>. My talk focused on the historical siginificance of the MOS 6502 CPU.</p>
+<blockquote>
+<p>The MOS 6502 might be the most historically significant processor for one reason: It fueled the PC revolution. You have probably used a device with a 6502, and maybe even programmed one, but do you know the historical context for it and what made it successful? This talk briefly covers the following aspects of the 6502: the events that lead to its creation, the elegance of the design, and the lessons we can learn from its success.</p>
+</blockquote>
+<p>Thanks to the wonderful pdxbyte organizers and voluteers my talk is now available on youtube: <a href="https://www.youtube.com/watch?v=wOJj-IdYZxI">https://www.youtube.com/watch?v=wOJj-IdYZxI</a></p>
+<p>I hope you enjoy it as much as I enjoyed researching the 6502.</p>
+<p>My slides are available at <a href="http://files.codersbase.com/6502.pdf">http://files.codersbase.com/6502.pdf</a></p>]]></summary>
+</entry>
+<entry>
     <title>Learning Dependent Types</title>
     <link href="http://blog.codersbase.com/posts/2013-12-03-learning-dependent-types.html" />
     <id>http://blog.codersbase.com/posts/2013-12-03-learning-dependent-types.html</id>
@@ -727,10 +741,7 @@ One simple rule is: Always try to give an explicit type signature to your iterat
 </div>
 <div>
 Another important lesson we learned is that our iteratees work with <span class="Apple-style-span" style="font-family: &#39;Courier New&#39;, Courier, monospace;">doQuery</span> in exactly the same way as functions passed to <span class="Apple-style-span" style="font-family: &#39;Courier New&#39;, Courier, monospace;">foldl</span>.  Specifically, they take an accumulator that has the same type as the seed we pass to <span class="Apple-style-span" style="font-family: &#39;Courier New&#39;, Courier, monospace;">doQuery</span>.  The iteratee is responsible for combining the accumulator and a ‘current value’ to produce a result.  In a future tutorial in this series, I will show you how to accumulate a list of results in the iteratee.
-</div>
-
-
-]]></summary>
+</div>]]></summary>
 </entry>
 <entry>
     <title>Delimited Continuations and version control: an update</title>
@@ -816,10 +827,7 @@ So far I’m not sure.  I suspect, without working through the details, that in
 </div>
 <div>
 <span class="Apple-style-span" style="font-family: inherit;">I don’t know the answer yet, but I think it’s an interesting question.  I suspect there are multiple “correct” answers, but that only some answers will yield elegant and robust models here.</span>
-</div>
-
-
-]]></summary>
+</div>]]></summary>
 </entry>
 <entry>
     <title>Type-Correct Changes -- A Safe Approach to Version Control Implementation</title>
